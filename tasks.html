@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simployee — Tasks</title>
+  <script>if (!localStorage.getItem('token')) window.location.replace('login.html');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0F172A;
+      --bg-card:     #1E293B;
+      --bg-card-2:   #162032;
+      --accent:      #6366F1;
+      --accent-dark: #4F46E5;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-dim:  rgba(99, 102, 241, 0.12);
+      --text:        #F8FAFC;
+      --text-muted:  #94A3B8;
+      --border:      rgba(99, 102, 241, 0.18);
+      --border-card: rgba(255, 255, 255, 0.06);
+      --green:       #34D399;
+      --green-dim:   rgba(52, 211, 153, 0.08);
+      --yellow:      #FBBF24;
+      --yellow-dim:  rgba(251, 191, 36, 0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Cursor glow ───────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Navbar ────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .nav-logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 7px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover  { color: var(--text); background: var(--accent-dim); }
+    .nav-links a.active { color: var(--text); background: var(--accent-dim); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-avatar {
+      width: 30px; height: 30px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .btn-logout {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 7px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .btn-logout:hover { color: var(--text); border-color: var(--border); background: var(--accent-dim); }
+
+    /* ── Page layout ───────────────────────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 96px 1.5rem 4rem;
+    }
+
+    /* ── Page header ───────────────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .page-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    .page-title {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* ── Skeleton ──────────────────────────────────────────────────────────── */
+    .skeleton {
+      display: inline-block;
+      background: linear-gradient(90deg, #1E293B 25%, #2D3F5A 50%, #1E293B 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+      color: transparent;
+      user-select: none;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── State: loading ────────────────────────────────────────────────────── */
+    #state-loading {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .skel-bar {
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #1E293B 25%, #2D3F5A 50%, #1E293B 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+
+    /* ── State: empty ──────────────────────────────────────────────────────── */
+    #state-empty {
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .empty-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 380px;
+      margin: 0 auto 2rem;
+      line-height: 1.65;
+    }
+
+    /* ── Buttons ───────────────────────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.75rem;
+      cursor: pointer;
+      transition: box-shadow 0.25s, transform 0.2s, opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 28px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:active   { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 0.55rem 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .btn-secondary:hover { color: var(--text); border-color: var(--border); background: var(--accent-dim); }
+
+    /* ── Task selector ─────────────────────────────────────────────────────── */
+    .task-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .task-selector-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .task-selector-btn:hover { color: var(--text); border-color: var(--border); }
+
+    .task-selector-btn.active {
+      color: var(--text);
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .task-selector-btn .task-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 0.15rem 0.55rem;
+      flex-shrink: 0;
+    }
+
+    .task-selector-btn.active .task-num {
+      background: rgba(99,102,241,0.25);
+    }
+
+    .task-selector-btn .task-title-preview {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-chip {
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+    }
+
+    .status-chip.pending  { color: #93C5FD; background: rgba(147,197,253,0.1); border: 1px solid rgba(147,197,253,0.2); }
+    .status-chip.submitted { color: var(--yellow); background: var(--yellow-dim); border: 1px solid rgba(251,191,36,0.2); }
+    .status-chip.reviewed { color: var(--green);  background: var(--green-dim);  border: 1px solid rgba(52,211,153,0.2); }
+
+    /* ── Task detail card ──────────────────────────────────────────────────── */
+    .task-detail {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .task-detail-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.4rem 1.75rem;
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .task-detail-title { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; }
+    .task-detail-body  { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+    .detail-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+    }
+
+    .detail-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .deliverable-box {
+      background: rgba(99,102,241,0.07);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.875rem;
+      color: #C7D2FE;
+      line-height: 1.65;
+    }
+
+    /* ── Submission form ───────────────────────────────────────────────────── */
+    .submission-section { display: flex; flex-direction: column; gap: 0.9rem; }
+
+    textarea.submission-input {
+      width: 100%;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.83rem;
+      color: var(--text);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      resize: vertical;
+      min-height: 130px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      line-height: 1.6;
+    }
+
+    textarea.submission-input::placeholder { color: #475569; }
+
+    textarea.submission-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+
+    /* ── File upload ───────────────────────────────────────────────────────── */
+    .file-upload-area {
+      border: 1.5px dashed var(--border-card);
+      border-radius: 10px;
+      padding: 1.25rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .file-upload-area:hover,
+    .file-upload-area.dragover { border-color: var(--accent); background: var(--accent-dim); }
+
+    .file-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-upload-label {
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .file-upload-icon { font-size: 1.5rem; }
+
+    .file-upload-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .file-upload-types {
+      font-size: 0.72rem;
+      color: #475569;
+    }
+
+    .file-selected-row {
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 0.5rem 0.85rem;
+    }
+
+    .file-selected-row.visible { display: flex; }
+
+    .file-selected-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .btn-remove-file {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1;
+      padding: 0 0.2rem;
+      transition: color 0.2s;
+    }
+
+    .btn-remove-file:hover { color: #F87171; }
+
+    /* ── Reviewed state ────────────────────────────────────────────────────── */
+    .submission-display {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.65;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .feedback-box {
+      background: var(--green-dim);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-left: 3px solid var(--green);
+      border-radius: 0 10px 10px 0;
+      padding: 1rem 1.2rem;
+      font-size: 0.875rem;
+      color: #A7F3D0;
+      line-height: 1.7;
+    }
+
+    .feedback-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.6rem;
+    }
+
+    /* ── Submitted (waiting) state ─────────────────────────────────────────── */
+    .waiting-banner {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--yellow-dim);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 10px;
+      padding: 0.85rem 1.1rem;
+      font-size: 0.875rem;
+      color: var(--yellow);
+    }
+
+    /* ── Advance week banner ───────────────────────────────────────────────── */
+    #advance-banner {
+      margin-top: 1.25rem;
+      background: var(--green-dim);
+      border: 1px solid rgba(52,211,153,0.2);
+      border-radius: 14px;
+      padding: 1.4rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .advance-text { font-size: 0.9rem; font-weight: 600; color: var(--green); }
+    .advance-sub  { font-size: 0.8rem; color: #6EE7B7; margin-top: 0.15rem; }
+
+    /* ── Error msg ─────────────────────────────────────────────────────────── */
+    .error-msg {
+      font-size: 0.82rem;
+      color: #F87171;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* ── Spinner ───────────────────────────────────────────────────────────── */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .task-detail-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-glow"></div>
+
+  <!-- ── Navbar ────────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="dashboard.html" class="nav-logo">💼 <span>Simployee</span></a>
+
+    <ul class="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="tasks.html" class="active">Tasks</a></li>
+      <li><a href="#">Progress</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">—</div>
+        <span id="nav-username">—</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">Log Out</button>
+    </div>
+  </nav>
+
+  <!-- ── Main ──────────────────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <p class="page-label">Tasks</p>
+        <h1 class="page-title" id="page-title">
+          <span class="skeleton">Week N Tasks</span>
+        </h1>
+        <p class="page-subtitle" id="page-subtitle"></p>
+      </div>
+    </div>
+
+    <!-- State: loading -->
+    <div id="state-loading">
+      <div class="skel-bar" style="width:100%; height:52px; border-radius:10px; margin-bottom:.5rem"></div>
+      <div class="skel-bar" style="width:100%; height:52px; border-radius:10px; margin-bottom:.5rem"></div>
+      <div class="skel-bar" style="width:100%; height:52px; border-radius:10px; margin-bottom:1.25rem"></div>
+      <div class="skel-bar" style="width:100%; height:280px; border-radius:16px"></div>
+    </div>
+
+    <!-- State: no tasks -->
+    <div id="state-empty" hidden>
+      <div class="empty-icon">📋</div>
+      <p class="empty-title">No tasks yet for this week</p>
+      <p class="empty-sub">Your manager Sophie Chen will prepare 3 tasks for you. Click below to generate your work for this week.</p>
+      <button class="btn-primary" id="btn-generate">
+        <span id="gen-spinner" class="spinner" hidden></span>
+        ⚡ Generate Week Tasks
+      </button>
+      <p class="error-msg" id="gen-error" style="margin-top:.85rem; max-width:380px; margin-inline:auto;"></p>
+    </div>
+
+    <!-- State: has tasks -->
+    <div id="state-tasks" hidden>
+
+      <!-- Task selector -->
+      <div class="task-selector" id="task-selector"></div>
+
+      <!-- Task detail -->
+      <div class="task-detail" id="task-detail"></div>
+
+      <!-- Advance week banner (shown when all reviewed) -->
+      <div id="advance-banner" hidden>
+        <div>
+          <p class="advance-text">🎉 All tasks completed for this week!</p>
+          <p class="advance-sub">You can now advance to the next week.</p>
+        </div>
+        <button class="btn-primary" id="btn-advance">
+          <span id="adv-spinner" class="spinner" hidden></span>
+          Advance to Week <span id="next-week-label">2</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE   = 'http://localhost:8000';
+    const token      = localStorage.getItem('token');
+    const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    let tasks        = [];
+    let selectedIdx  = 0;
+    let currentWeek  = 1;
+    let selectedFile = null;   // holds the File object for the current task
+
+    // ── Cursor glow ───────────────────────────────────────────────────────────
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let glowX  = mouseX, glowY = mouseY;
+
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    (function tick() {
+      glowX += (mouseX - glowX) * 0.07;
+      glowY += (mouseY - glowY) * 0.07;
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+      requestAnimationFrame(tick);
+    })();
+
+    // ── Navbar user ───────────────────────────────────────────────────────────
+    if (cachedUser.full_name) {
+      const initials = cachedUser.full_name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      document.getElementById('nav-avatar').textContent   = initials;
+      document.getElementById('nav-username').textContent = cachedUser.username || '';
+    }
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    });
+
+    // ── Show / hide states ────────────────────────────────────────────────────
+    function showState(name) {
+      ['loading', 'empty', 'tasks'].forEach(s => {
+        document.getElementById(`state-${s}`).hidden = s !== name;
+      });
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function statusChip(status) {
+      const map = { pending: '🔵 Pending', submitted: '🟡 Submitted', reviewed: '✅ Reviewed' };
+      return `<span class="status-chip ${status}">${map[status] || status}</span>`;
+    }
+
+    function setLoading(btn, spinner, loading) {
+      btn.disabled         = loading;
+      spinner.hidden       = !loading;
+    }
+
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+
+    function clearError(id) {
+      const el = document.getElementById(id);
+      el.textContent = '';
+      el.classList.remove('visible');
+    }
+
+    // ── Render task selector ──────────────────────────────────────────────────
+    function renderSelector() {
+      const container = document.getElementById('task-selector');
+      container.innerHTML = tasks.map((t, i) => `
+        <button class="task-selector-btn ${i === selectedIdx ? 'active' : ''}"
+                data-idx="${i}">
+          <span class="task-num">TASK ${i + 1}</span>
+          <span class="task-title-preview">${escHtml(t.title)}</span>
+          ${statusChip(t.status)}
+        </button>
+      `).join('');
+
+      container.querySelectorAll('.task-selector-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectedIdx  = parseInt(btn.dataset.idx);
+          selectedFile = null;
+          renderSelector();
+          renderDetail();
+        });
+      });
+    }
+
+    // ── Render task detail ────────────────────────────────────────────────────
+    function renderDetail() {
+      const task    = tasks[selectedIdx];
+      const detail  = document.getElementById('task-detail');
+
+      let bodyHtml = '';
+
+      if (task.status === 'pending') {
+        bodyHtml = `
+          <div class="submission-section">
+            <div>
+              <p class="detail-label">Your submission</p>
+              <textarea class="submission-input" id="sub-text"
+                placeholder="Paste your SQL query, Python script, or explain what you did…"></textarea>
+            </div>
+            <div>
+              <p class="detail-label">Attach a file</p>
+              <div class="file-upload-area" id="file-drop">
+                <input type="file" id="file-input"
+                  accept=".xlsx,.xls,.csv,.py,.sql,.txt" />
+                <div class="file-upload-label">
+                  <span class="file-upload-icon">📁</span>
+                  <span class="file-upload-text">Click to upload or drag & drop</span>
+                  <span class="file-upload-types">.xlsx · .csv · .py · .sql · .txt</span>
+                </div>
+              </div>
+              <div class="file-selected-row" id="file-selected-row">
+                <span>📎</span>
+                <span class="file-selected-name" id="file-selected-name"></span>
+                <button class="btn-remove-file" id="btn-remove-file" title="Remove file">×</button>
+              </div>
+            </div>
+            <p class="error-msg" id="sub-error"></p>
+            <button class="btn-primary" id="btn-submit" style="align-self:flex-start">
+              <span id="sub-spinner" class="spinner" hidden></span>
+              Submit
+            </button>
+          </div>
+        `;
+      } else if (task.status === 'submitted') {
+        bodyHtml = `
+          <div>
+            <p class="detail-label">Your submission</p>
+            <div class="submission-display">${escHtml(task.submission || '')}</div>
+          </div>
+          <div class="waiting-banner">
+            <div class="spinner" style="border-color:rgba(251,191,36,0.3); border-top-color:var(--yellow)"></div>
+            Sophie Chen is reviewing your work…
+          </div>
+        `;
+      } else if (task.status === 'reviewed') {
+        bodyHtml = `
+          <div>
+            <p class="detail-label">Your submission</p>
+            <div class="submission-display">${escHtml(task.submission || '')}</div>
+          </div>
+          <div>
+            <div class="feedback-header">
+              ✦ Feedback from Sophie Chen
+            </div>
+            <div class="feedback-box">${escHtml(task.feedback || '')}</div>
+          </div>
+          <button class="btn-secondary" id="btn-resubmit" style="align-self:flex-start">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Resubmit Task
+          </button>
+        `;
+      }
+
+      detail.innerHTML = `
+        <div class="task-detail-header">
+          <h2 class="task-detail-title">${escHtml(task.title)}</h2>
+          ${statusChip(task.status)}
+        </div>
+        <div class="task-detail-body">
+          <div>
+            <p class="detail-label">Description</p>
+            <p class="detail-text">${escHtml(task.description)}</p>
+          </div>
+          <div>
+            <p class="detail-label">Deliverable</p>
+            <div class="deliverable-box">${escHtml(task.deliverable)}</div>
+          </div>
+          ${bodyHtml}
+        </div>
+      `;
+
+      // Bind events after render
+      if (task.status === 'pending') {
+        bindSubmitForm(task);
+      } else if (task.status === 'reviewed') {
+        document.getElementById('btn-resubmit').addEventListener('click', () => resubmitTask(task.id));
+      }
+
+      // Check if all tasks reviewed
+      const allDone = tasks.every(t => t.status === 'reviewed');
+      const banner  = document.getElementById('advance-banner');
+      banner.hidden = !allDone;
+      if (allDone) {
+        document.getElementById('next-week-label').textContent = currentWeek + 1;
+      }
+    }
+
+    // ── File upload binding ───────────────────────────────────────────────────
+    function bindSubmitForm(task) {
+      const fileInput   = document.getElementById('file-input');
+      const fileDrop    = document.getElementById('file-drop');
+      const selectedRow = document.getElementById('file-selected-row');
+      const selectedName = document.getElementById('file-selected-name');
+
+      function setFile(file) {
+        if (!file) return;
+        selectedFile = file;
+        selectedName.textContent = file.name;
+        selectedRow.classList.add('visible');
+        fileDrop.style.display = 'none';
+      }
+
+      fileInput.addEventListener('change', e => setFile(e.target.files[0]));
+
+      fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('dragover'); });
+      fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
+      fileDrop.addEventListener('drop', e => {
+        e.preventDefault();
+        fileDrop.classList.remove('dragover');
+        setFile(e.dataTransfer.files[0]);
+      });
+
+      document.getElementById('btn-remove-file').addEventListener('click', () => {
+        selectedFile = null;
+        fileInput.value = '';
+        selectedRow.classList.remove('visible');
+        fileDrop.style.display = '';
+      });
+
+      document.getElementById('btn-submit').addEventListener('click', () => submitTask(task.id));
+    }
+
+    // ── Render full tasks view ────────────────────────────────────────────────
+    function renderTasks() {
+      showState('tasks');
+      renderSelector();
+      renderDetail();
+    }
+
+    // ── Escape HTML ───────────────────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/\n/g, '<br>');
+    }
+
+    // ── API: load user progress ───────────────────────────────────────────────
+    // TODO: GET /users/me/progress — fetch current week from user_progress table
+    async function loadProgress() {
+      // Placeholder: always week 1 until endpoint exists
+      currentWeek = 1;
+      return currentWeek;
+    }
+
+    // ── API: load tasks ───────────────────────────────────────────────────────
+    // TODO: GET /tasks?week={week} — fetch tasks for the current week
+    async function loadTasks() {
+      const res = await fetch(`${API_BASE}/tasks?week=${currentWeek}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.status === 401) { logout(); return []; }
+      if (!res.ok) throw new Error('Failed to load tasks.');
+      return res.json();
+    }
+
+    // ── API: generate tasks ───────────────────────────────────────────────────
+    // TODO: POST /tasks/generate — trigger AI task generation for current week
+    async function generateTasksAPI() {
+      const res = await fetch(`${API_BASE}/tasks/generate`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ week: currentWeek }),
+      });
+      if (res.status === 401) { logout(); return []; }
+      if (!res.ok) throw new Error('Failed to generate tasks. Try again.');
+      return res.json();
+    }
+
+    // ── API: submit task ──────────────────────────────────────────────────────
+    // TODO: POST /tasks/{id}/submit — submit text + optional file, get AI feedback
+    async function submitTaskAPI(taskId, text, file) {
+      const formData = new FormData();
+      formData.append('submission_text', text);
+      if (file) formData.append('file', file);
+
+      const res = await fetch(`${API_BASE}/tasks/${taskId}/submit`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData,
+      });
+      if (res.status === 401) { logout(); return null; }
+      if (!res.ok) throw new Error('Failed to submit. Try again.');
+      return res.json();
+    }
+
+    // ── API: resubmit task ────────────────────────────────────────────────────
+    // TODO: POST /tasks/{id}/resubmit — clear submission/feedback, set status back to pending
+    async function resubmitTaskAPI(taskId) {
+      const res = await fetch(`${API_BASE}/tasks/${taskId}/resubmit`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.status === 401) { logout(); return null; }
+      if (!res.ok) throw new Error('Failed to resubmit. Try again.');
+      return res.json();
+    }
+
+    // ── API: advance week ─────────────────────────────────────────────────────
+    // TODO: POST /users/me/advance — increment current_week in user_progress
+    async function advanceWeekAPI() {
+      const res = await fetch(`${API_BASE}/users/me/advance`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.status === 401) { logout(); return null; }
+      if (!res.ok) throw new Error('Failed to advance week. Try again.');
+      return res.json();
+    }
+
+    // ── Handlers ──────────────────────────────────────────────────────────────
+    async function submitTask(taskId) {
+      clearError('sub-error');
+      const text = document.getElementById('sub-text').value.trim();
+
+      if (!text && !selectedFile) {
+        showError('sub-error', 'Please submit something — text, code, or a file.');
+        return;
+      }
+
+      const btn     = document.getElementById('btn-submit');
+      const spinner = document.getElementById('sub-spinner');
+      setLoading(btn, spinner, true);
+
+      try {
+        const updated = await submitTaskAPI(taskId, text, selectedFile);
+        // Update local state and re-render
+        const idx    = tasks.findIndex(t => t.id === taskId);
+        tasks[idx]   = updated;
+        selectedFile = null;
+        renderSelector();
+        renderDetail();
+      } catch (err) {
+        showError('sub-error', err.message);
+        setLoading(btn, spinner, false);
+      }
+    }
+
+    async function resubmitTask(taskId) {
+      try {
+        const updated = await resubmitTaskAPI(taskId);
+        const idx     = tasks.findIndex(t => t.id === taskId);
+        tasks[idx]    = updated;
+        selectedFile  = null;
+        renderSelector();
+        renderDetail();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    document.getElementById('btn-generate').addEventListener('click', async () => {
+      clearError('gen-error');
+      const btn     = document.getElementById('btn-generate');
+      const spinner = document.getElementById('gen-spinner');
+      setLoading(btn, spinner, true);
+
+      try {
+        tasks = await generateTasksAPI();
+        renderTasks();
+      } catch (err) {
+        showError('gen-error', err.message);
+        setLoading(btn, spinner, false);
+      }
+    });
+
+    document.getElementById('btn-advance').addEventListener('click', async () => {
+      const btn     = document.getElementById('btn-advance');
+      const spinner = document.getElementById('adv-spinner');
+      setLoading(btn, spinner, true);
+
+      try {
+        await advanceWeekAPI();
+        currentWeek++;
+        tasks       = [];
+        selectedIdx = 0;
+        document.getElementById('page-title').textContent    = `Week ${currentWeek} Tasks`;
+        document.getElementById('page-subtitle').textContent =
+          `Junior Data Analyst · NovaRetail Inc. · Week ${currentWeek} of 24`;
+        showState('empty');
+      } catch (err) {
+        alert(err.message);
+        setLoading(btn, spinner, false);
+      }
+    });
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+      showState('loading');
+
+      try {
+        await loadProgress();
+
+        document.getElementById('page-title').textContent    = `Week ${currentWeek} Tasks`;
+        document.getElementById('page-subtitle').textContent =
+          `Junior Data Analyst · NovaRetail Inc. · Week ${currentWeek} of 24`;
+
+        tasks = await loadTasks();
+
+        if (tasks.length === 0) {
+          showState('empty');
+        } else {
+          renderTasks();
+        }
+      } catch {
+        // API unreachable — show empty state so user isn't stuck
+        document.getElementById('page-title').textContent    = `Week ${currentWeek} Tasks`;
+        document.getElementById('page-subtitle').textContent = `Junior Data Analyst · NovaRetail Inc.`;
+        showState('empty');
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
