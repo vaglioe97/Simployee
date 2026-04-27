@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simployee — Progress</title>
+  <script>if (!localStorage.getItem('token')) window.location.replace('login.html');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --bg:          #0F172A;
+      --bg-card:     #1E293B;
+      --bg-card-2:   #162032;
+      --accent:      #6366F1;
+      --accent-dark: #4F46E5;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-dim:  rgba(99, 102, 241, 0.12);
+      --text:        #F8FAFC;
+      --text-muted:  #94A3B8;
+      --border:      rgba(99, 102, 241, 0.18);
+      --border-card: rgba(255, 255, 255, 0.06);
+      --green:       #34D399;
+      --green-dim:   rgba(52, 211, 153, 0.08);
+      --yellow:      #FBBF24;
+      --yellow-dim:  rgba(251, 191, 36, 0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Cursor glow ───────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Navbar ────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .nav-logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 7px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover  { color: var(--text); background: var(--accent-dim); }
+    .nav-links a.active { color: var(--text); background: var(--accent-dim); }
+
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-avatar {
+      width: 30px; height: 30px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .btn-logout {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 7px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .btn-logout:hover { color: var(--text); border-color: var(--border); background: var(--accent-dim); }
+
+    /* ── Page layout ───────────────────────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 96px 1.5rem 4rem;
+    }
+
+    /* ── Skeleton ──────────────────────────────────────────────────────────── */
+    .skel-bar {
+      background: linear-gradient(90deg, #1E293B 25%, #2D3F5A 50%, #1E293B 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 8px;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Page header ───────────────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .page-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    .page-title {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .page-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .week-badge {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.3rem;
+    }
+
+    .week-badge-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .week-badge-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Section title ─────────────────────────────────────────────────────── */
+    .section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+    }
+
+    /* ── Progress card ─────────────────────────────────────────────────────── */
+    .progress-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.25rem;
+      transition: border-color 0.25s;
+    }
+
+    .progress-card:hover { border-color: var(--border); }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1rem;
+    }
+
+    .progress-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .progress-pct {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .progress-bar-bg {
+      background: rgba(255,255,255,0.05);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 0.65rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6366F1, #818CF8);
+      width: 0%;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .progress-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Metrics grid ──────────────────────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .metric-card {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+
+    .metric-card:hover { border-color: var(--border); transform: translateY(-2px); }
+
+    .metric-icon { font-size: 1.1rem; margin-bottom: 0.55rem; }
+
+    .metric-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .metric-value.accent {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metric-value.green  { color: var(--green); }
+    .metric-value.yellow { color: var(--yellow); }
+
+    .metric-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* ── Role card ─────────────────────────────────────────────────────────── */
+    .role-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+
+    .role-card:hover { border-color: var(--border); }
+
+    .role-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, #6366F1, #818CF8);
+      border-radius: 3px 0 0 3px;
+    }
+
+    .role-card-inner { padding-left: 0.5rem; }
+
+    .role-company-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .company-icon {
+      width: 36px; height: 36px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .company-name { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); }
+
+    .role-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.65rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 99px;
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tag-accent {
+      color: #818CF8;
+      border-color: var(--border);
+      background: var(--accent-dim);
+    }
+
+    .manager-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .manager-dot {
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .resp-divider {
+      border: none;
+      border-top: 1px solid var(--border-card);
+      margin: 1rem 0;
+    }
+
+    .resp-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .resp-list { display: flex; flex-direction: column; gap: 0.35rem; }
+
+    .resp-item {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .resp-item::before {
+      content: '—';
+      color: var(--accent);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* ── Weekly breakdown ──────────────────────────────────────────────────── */
+    .breakdown-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .week-row {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      transition: border-color 0.2s;
+    }
+
+    .week-row:hover { border-color: var(--border); }
+    .week-row.current { border-color: var(--border); background: var(--bg-card); }
+    .week-row.locked  { opacity: 0.38; pointer-events: none; }
+
+    .week-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 0.18rem 0.6rem;
+      flex-shrink: 0;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .week-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      flex: 1;
+    }
+
+    .task-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.74rem;
+      font-weight: 500;
+      padding: 0.22rem 0.6rem;
+      border-radius: 99px;
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.025);
+      max-width: 210px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .task-pill.reviewed  { color: var(--green);  background: var(--green-dim);  border-color: rgba(52,211,153,0.2); }
+    .task-pill.pending   { color: #93C5FD; background: rgba(147,197,253,0.07); border-color: rgba(147,197,253,0.15); }
+    .task-pill.submitted { color: var(--yellow); background: var(--yellow-dim); border-color: rgba(251,191,36,0.2); }
+    .task-pill.empty     { color: #475569; border-style: dashed; background: transparent; }
+
+    .week-badge-chip {
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.18rem 0.6rem;
+      border-radius: 99px;
+    }
+
+    .week-badge-chip.done    { color: var(--green);  background: var(--green-dim);  border: 1px solid rgba(52,211,153,0.2); }
+    .week-badge-chip.active  { color: #818CF8; background: var(--accent-dim); border: 1px solid var(--border); }
+    .week-badge-chip.locked  { color: #475569; background: rgba(71,85,105,0.08); border: 1px solid rgba(71,85,105,0.18); }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .page-header { flex-direction: column; }
+      .week-badge { align-items: flex-start; }
+      .week-row { flex-wrap: wrap; }
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-glow"></div>
+
+  <!-- ── Navbar ────────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="dashboard.html" class="nav-logo">💼 <span>Simployee</span></a>
+
+    <ul class="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="tasks.html">Tasks</a></li>
+      <li><a href="progress.html" class="active">Progress</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">—</div>
+        <span id="nav-username">—</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">Log Out</button>
+    </div>
+  </nav>
+
+  <!-- ── Main ──────────────────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- State: loading skeleton -->
+    <div id="state-loading">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2rem">
+        <div>
+          <div class="skel-bar" style="width:64px;height:11px;margin-bottom:.5rem"></div>
+          <div class="skel-bar" style="width:220px;height:30px"></div>
+        </div>
+        <div class="skel-bar" style="width:72px;height:40px;border-radius:10px"></div>
+      </div>
+      <div class="skel-bar" style="width:100%;height:96px;border-radius:16px;margin-bottom:1.25rem"></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem">
+        <div class="skel-bar" style="height:104px;border-radius:14px"></div>
+        <div class="skel-bar" style="height:104px;border-radius:14px"></div>
+        <div class="skel-bar" style="height:104px;border-radius:14px"></div>
+        <div class="skel-bar" style="height:104px;border-radius:14px"></div>
+      </div>
+      <div class="skel-bar" style="width:120px;height:11px;margin-bottom:.85rem"></div>
+      <div class="skel-bar" style="width:100%;height:160px;border-radius:16px;margin-bottom:1.75rem"></div>
+      <div class="skel-bar" style="width:120px;height:11px;margin-bottom:.85rem"></div>
+      <div class="skel-bar" style="width:100%;height:54px;border-radius:12px;margin-bottom:.6rem"></div>
+      <div class="skel-bar" style="width:100%;height:54px;border-radius:12px;margin-bottom:.6rem"></div>
+      <div class="skel-bar" style="width:100%;height:54px;border-radius:12px"></div>
+    </div>
+
+    <!-- State: content -->
+    <div id="state-content" hidden>
+
+      <!-- Header -->
+      <div class="page-header">
+        <div>
+          <p class="page-label">Progress</p>
+          <h1 class="page-title" id="page-title">Your Progress</h1>
+          <p class="page-subtitle" id="page-subtitle">Junior Data Analyst · NovaRetail Inc.</p>
+        </div>
+        <div class="week-badge">
+          <span class="week-badge-label">Current Week</span>
+          <span class="week-badge-value" id="week-badge">1 / 24</span>
+        </div>
+      </div>
+
+      <!-- Overall progress bar -->
+      <div class="progress-card">
+        <div class="progress-top">
+          <span class="progress-card-title">Overall Progress</span>
+          <span class="progress-pct" id="progress-pct">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <p class="progress-desc" id="progress-desc">Week 1 of 24 · Junior Data Analyst Program</p>
+      </div>
+
+      <!-- Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-icon">✅</div>
+          <p class="metric-label">Weeks Completed</p>
+          <p class="metric-value green" id="metric-weeks-done">0</p>
+          <p class="metric-sub">of 24 total</p>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">📋</div>
+          <p class="metric-label">Tasks Completed</p>
+          <p class="metric-value accent" id="metric-tasks-done">0</p>
+          <p class="metric-sub">reviewed tasks</p>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">⏳</div>
+          <p class="metric-label">Tasks Pending</p>
+          <p class="metric-value yellow" id="metric-tasks-pending">0</p>
+          <p class="metric-sub">this week</p>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon">🗓️</div>
+          <p class="metric-label">Weeks Remaining</p>
+          <p class="metric-value" id="metric-weeks-left">24</p>
+          <p class="metric-sub">to complete</p>
+        </div>
+      </div>
+
+      <!-- Your Role -->
+      <p class="section-title">Your Role</p>
+      <div class="role-card">
+        <div class="role-card-inner">
+          <div class="role-company-row">
+            <div class="company-icon">🏢</div>
+            <span class="company-name" id="role-company">NovaRetail Inc.</span>
+          </div>
+          <h2 class="role-title" id="role-title">Junior Data Analyst</h2>
+          <div class="tag-row" id="role-tags"></div>
+          <div class="manager-row">
+            <span class="manager-dot"></span>
+            <span id="manager-text">Manager: <strong>Sophie Chen</strong> — Senior Data Analyst</span>
+          </div>
+          <hr class="resp-divider" />
+          <p class="resp-label">Responsibilities</p>
+          <div class="resp-list" id="resp-list"></div>
+        </div>
+      </div>
+
+      <!-- Weekly breakdown -->
+      <p class="section-title">Weekly Breakdown</p>
+      <div class="breakdown-list" id="breakdown-list"></div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE   = 'http://localhost:8000';
+    const token      = localStorage.getItem('token');
+    const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // ── Cursor glow ───────────────────────────────────────────────────────────
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let glowX  = mouseX, glowY = mouseY;
+
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    (function tick() {
+      glowX += (mouseX - glowX) * 0.07;
+      glowY += (mouseY - glowY) * 0.07;
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+      requestAnimationFrame(tick);
+    })();
+
+    // ── Navbar ────────────────────────────────────────────────────────────────
+    if (cachedUser.full_name) {
+      const initials = cachedUser.full_name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      document.getElementById('nav-avatar').textContent   = initials;
+      document.getElementById('nav-username').textContent = cachedUser.username || '';
+    }
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    });
+
+    // ── Local job path metadata (mirrors api/main.py JOB_PATHS) ──────────────
+    const JOB_PATH_META = {
+      junior_data_analyst: {
+        industry:      'Retail & E-commerce',
+        manager:       'Sophie Chen',
+        manager_title: 'Senior Data Analyst',
+        stack:         ['SQL', 'Python', 'Excel', 'Power BI'],
+        responsibilities: [
+          'Clean and transform sales and inventory datasets',
+          'Create weekly reports for the operations team',
+          'Analyze customer behavior trends',
+          'Maintain and update Power BI dashboards',
+          'Handle ad-hoc data requests from the business team',
+        ],
+      },
+    };
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    }
+
+    // ── API ───────────────────────────────────────────────────────────────────
+    async function fetchProgress() {
+      const res = await fetch(`${API_BASE}/users/me/progress`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.status === 401) { logout(); return null; }
+      if (!res.ok) throw new Error('Failed to load progress.');
+      return await res.json();
+    }
+
+    async function fetchWeekTasks(week) {
+      const res = await fetch(`${API_BASE}/tasks?week=${week}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    }
+
+    // ── Render ────────────────────────────────────────────────────────────────
+    function render(progress, weekTasksMap) {
+      const currentWeek   = progress.current_week;
+      const durationWeeks = progress.job_path?.duration_weeks ?? 24;
+      const jobTitle      = progress.job_path?.title   ?? 'Junior Data Analyst';
+      const jobCompany    = progress.job_path?.company  ?? 'NovaRetail Inc.';
+      const jobPathId     = progress.job_path_id        ?? 'junior_data_analyst';
+      const meta          = JOB_PATH_META[jobPathId]   ?? JOB_PATH_META.junior_data_analyst;
+
+      // ── Aggregate metrics ─────────────────────────────────────────────────
+      let tasksDone    = 0;
+      const currentTasks = weekTasksMap[currentWeek] ?? [];
+
+      for (const tasks of Object.values(weekTasksMap)) {
+        for (const t of tasks) {
+          if (t.status === 'reviewed') tasksDone++;
+        }
+      }
+
+      const tasksPending  = currentTasks.filter(t => t.status !== 'reviewed').length;
+      const weeksDone     = currentWeek - 1;
+      const weeksLeft     = durationWeeks - currentWeek;
+      const pct           = durationWeeks > 0 ? Math.round((weeksDone / durationWeeks) * 100) : 0;
+
+      // ── Header ────────────────────────────────────────────────────────────
+      const namePrefix = cachedUser.full_name ? `${cachedUser.full_name.split(' ')[0]}'s` : 'Your';
+      document.getElementById('page-title').textContent    = `${namePrefix} Progress`;
+      document.getElementById('page-subtitle').textContent = `${jobTitle} · ${jobCompany}`;
+      document.getElementById('week-badge').textContent    = `${currentWeek} / ${durationWeeks}`;
+
+      // ── Progress bar ──────────────────────────────────────────────────────
+      document.getElementById('progress-pct').textContent  = `${pct}%`;
+      document.getElementById('progress-desc').textContent =
+        `Week ${currentWeek} of ${durationWeeks} · ${jobTitle} Program`;
+
+      requestAnimationFrame(() => {
+        document.getElementById('progress-fill').style.width = `${pct}%`;
+      });
+
+      // ── Metrics ───────────────────────────────────────────────────────────
+      document.getElementById('metric-weeks-done').textContent    = weeksDone;
+      document.getElementById('metric-tasks-done').textContent    = tasksDone;
+      document.getElementById('metric-tasks-pending').textContent = tasksPending;
+      document.getElementById('metric-weeks-left').textContent    = Math.max(0, weeksLeft);
+
+      // ── Role card ─────────────────────────────────────────────────────────
+      document.getElementById('role-company').textContent = jobCompany;
+      document.getElementById('role-title').textContent   = jobTitle;
+      document.getElementById('manager-text').innerHTML   =
+        `Manager: <strong>${escHtml(meta.manager)}</strong> — ${escHtml(meta.manager_title)}`;
+
+      const stackTags = meta.stack
+        .map(s => `<span class="tag">${escHtml(s)}</span>`)
+        .join('');
+      document.getElementById('role-tags').innerHTML =
+        `<span class="tag tag-accent">${escHtml(meta.industry)}</span>` +
+        `<span class="tag">Entry Level</span>` +
+        `<span class="tag">${durationWeeks} weeks</span>` +
+        stackTags;
+
+      document.getElementById('resp-list').innerHTML = meta.responsibilities
+        .map(r => `<div class="resp-item">${escHtml(r)}</div>`)
+        .join('');
+
+      // ── Weekly breakdown ──────────────────────────────────────────────────
+      const rows = [];
+
+      for (let w = 1; w <= durationWeeks; w++) {
+        const tasks     = weekTasksMap[w] ?? null;
+        const isLocked  = w > currentWeek;
+        const isCurrent = w === currentWeek;
+        const allDone   = tasks && tasks.length > 0 && tasks.every(t => t.status === 'reviewed');
+
+        // Status chip
+        let chipClass, chipLabel;
+        if (isLocked) {
+          chipClass = 'locked'; chipLabel = 'Upcoming';
+        } else if (allDone) {
+          chipClass = 'done';   chipLabel = '✓ Done';
+        } else {
+          chipClass = 'active'; chipLabel = 'In Progress';
+        }
+
+        // Task pills
+        let pillsHtml;
+        if (isLocked) {
+          pillsHtml = `<span class="task-pill empty">🔒 Not started yet</span>`;
+        } else if (!tasks || tasks.length === 0) {
+          pillsHtml = `<span class="task-pill empty">No tasks generated</span>`;
+        } else {
+          const STATUS_ICON = { pending: '○', submitted: '◑', reviewed: '●' };
+          pillsHtml = tasks.map(t => {
+            const icon  = STATUS_ICON[t.status] || '○';
+            const label = escHtml(t.title);
+            return `<span class="task-pill ${t.status}" title="${label}">${icon} ${label}</span>`;
+          }).join('');
+        }
+
+        rows.push(
+          `<div class="week-row${isCurrent ? ' current' : ''}${isLocked ? ' locked' : ''}">` +
+            `<span class="week-num">WK ${w}</span>` +
+            `<div class="week-pills">${pillsHtml}</div>` +
+            `<span class="week-badge-chip ${chipClass}">${chipLabel}</span>` +
+          `</div>`
+        );
+      }
+
+      document.getElementById('breakdown-list').innerHTML = rows.join('');
+
+      // ── Show content ──────────────────────────────────────────────────────
+      document.getElementById('state-loading').hidden = true;
+      document.getElementById('state-content').hidden = false;
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    async function init() {
+      try {
+        const progress = await fetchProgress();
+        if (!progress) return;
+
+        const currentWeek = progress.current_week;
+
+        // Fetch tasks for all active weeks in parallel
+        const weeks      = Array.from({ length: currentWeek }, (_, i) => i + 1);
+        const taskArrays = await Promise.all(weeks.map(w => fetchWeekTasks(w)));
+
+        const weekTasksMap = {};
+        weeks.forEach((w, i) => { weekTasksMap[w] = taskArrays[i]; });
+
+        render(progress, weekTasksMap);
+      } catch {
+        document.getElementById('state-loading').hidden = true;
+        document.getElementById('state-content').hidden = false;
+        document.getElementById('page-subtitle').textContent = 'Could not load data — please refresh.';
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
