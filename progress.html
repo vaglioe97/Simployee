@@ -754,6 +754,7 @@
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (res.status === 401) { logout(); return null; }
+      if (res.status === 404) { window.location.replace('jobpaths.html'); return null; }
       if (!res.ok) throw new Error('Failed to load progress.');
       return await res.json();
     }

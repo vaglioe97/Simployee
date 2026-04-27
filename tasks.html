@@ -935,6 +935,7 @@
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (res.status === 401) { logout(); return; }
+      if (res.status === 404) { window.location.replace('jobpaths.html'); return; }
       if (!res.ok) throw new Error('Failed to load progress.');
       const data = await res.json();
       currentWeek = data.current_week ?? 1;

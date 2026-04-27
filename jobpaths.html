@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simployee — Choose Your Role</title>
+  <script>if (!localStorage.getItem('token')) window.location.replace('login.html');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --bg:          #0F172A;
+      --bg-card:     #1E293B;
+      --bg-card-2:   #162032;
+      --accent:      #6366F1;
+      --accent-dark: #4F46E5;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-dim:  rgba(99, 102, 241, 0.12);
+      --text:        #F8FAFC;
+      --text-muted:  #94A3B8;
+      --border:      rgba(99, 102, 241, 0.18);
+      --border-card: rgba(255, 255, 255, 0.06);
+      --green:       #34D399;
+      --green-dim:   rgba(52, 211, 153, 0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Cursor glow ───────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Navbar ────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .nav-logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-avatar {
+      width: 30px; height: 30px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .btn-logout {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 7px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .btn-logout:hover { color: var(--text); border-color: var(--border); background: var(--accent-dim); }
+
+    /* ── Page layout ───────────────────────────────────────────────────────── */
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 80px 1.5rem 4rem;
+    }
+
+    /* ── Page hero ─────────────────────────────────────────────────────────── */
+    .hero {
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid var(--border-card);
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-sub {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.65;
+    }
+
+    /* ── Search bar ────────────────────────────────────────────────────────── */
+    .search-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 9px;
+      padding: 0.65rem 1rem 0.65rem 2.4rem;
+      outline: none;
+      transition: border-color 0.2s;
+      cursor: default;
+    }
+
+    .search-input:focus { border-color: var(--border); }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 99px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      white-space: nowrap;
+    }
+
+    .filter-pill.active {
+      color: #818CF8;
+      border-color: var(--border);
+      background: var(--accent-dim);
+    }
+
+    /* ── Results meta ──────────────────────────────────────────────────────── */
+    .results-meta {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .results-meta strong { color: var(--text); }
+
+    /* ── Board layout ──────────────────────────────────────────────────────── */
+    .board-layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    /* ── Job list panel ────────────────────────────────────────────────────── */
+    .job-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+    .job-list-card {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .job-list-card:hover  { border-color: var(--border); background: var(--bg-card); }
+    .job-list-card.active { border-color: var(--accent); background: var(--bg-card); }
+
+    .job-list-card.active::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, #6366F1, #818CF8);
+      border-radius: 3px 0 0 3px;
+    }
+
+    .jlc-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .jlc-logo {
+      width: 40px; height: 40px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .jlc-info { flex: 1; min-width: 0; }
+
+    .jlc-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .jlc-company {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .jlc-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .jlc-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+    }
+
+    .jlc-tag.green { color: var(--green); border-color: rgba(52,211,153,0.2); background: var(--green-dim); }
+
+    .jlc-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.65rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid var(--border-card);
+      font-size: 0.72rem;
+      color: #475569;
+    }
+
+    /* ── Job detail panel ──────────────────────────────────────────────────── */
+    .job-detail {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      overflow: hidden;
+      position: sticky;
+      top: 80px;
+    }
+
+    .jd-header {
+      padding: 1.75rem 2rem 1.5rem;
+      border-bottom: 1px solid var(--border-card);
+      position: relative;
+    }
+
+    .jd-header-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .jd-logo {
+      width: 52px; height: 52px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .jd-header-info { flex: 1; }
+
+    .jd-company-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .jd-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 0.1rem;
+    }
+
+    .jd-team {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .jd-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .jd-meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .jd-meta-chip.accent {
+      color: #818CF8;
+      border-color: var(--border);
+      background: var(--accent-dim);
+    }
+
+    .jd-meta-chip.green {
+      color: var(--green);
+      border-color: rgba(52,211,153,0.2);
+      background: var(--green-dim);
+    }
+
+    .btn-apply {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.75rem;
+      cursor: pointer;
+      transition: box-shadow 0.25s, transform 0.2s, opacity 0.2s;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .btn-apply:hover {
+      box-shadow: 0 0 28px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-apply:active   { transform: translateY(0); }
+    .btn-apply:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      font-size: 0.8rem;
+      color: #F87171;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      margin-top: 0.75rem;
+      text-align: center;
+    }
+
+    /* ── Job detail body ───────────────────────────────────────────────────── */
+    .jd-body {
+      padding: 1.75rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      max-height: calc(100vh - 340px);
+      overflow-y: auto;
+    }
+
+    .jd-body::-webkit-scrollbar { width: 4px; }
+    .jd-body::-webkit-scrollbar-track { background: transparent; }
+    .jd-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+
+    .jd-section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .jd-text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+    }
+
+    .jd-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .jd-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .jd-list-item::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 0.45em;
+    }
+
+    .jd-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .jd-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.3rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: #818CF8;
+      background: var(--accent-dim);
+    }
+
+    .jd-manager {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+    }
+
+    .jd-manager-avatar {
+      width: 38px; height: 38px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .jd-manager-name {
+      font-size: 0.875rem;
+      font-weight: 700;
+    }
+
+    .jd-manager-title {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .manager-online {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      color: var(--green);
+      margin-top: 0.1rem;
+    }
+
+    .manager-online::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .board-layout { grid-template-columns: 1fr; }
+      .job-detail { position: static; }
+      .jd-body { max-height: none; }
+    }
+
+    @media (max-width: 500px) {
+      .search-row { flex-direction: column; }
+      .jd-header { padding: 1.25rem; }
+      .jd-body { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-glow"></div>
+
+  <!-- ── Navbar ────────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="#" class="nav-logo">💼 <span>Simployee</span></a>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">—</div>
+        <span id="nav-username">—</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">Log Out</button>
+    </div>
+  </nav>
+
+  <!-- ── Main ──────────────────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- Hero -->
+    <div class="hero">
+      <p class="hero-label">Job Simulation Board</p>
+      <h1 class="hero-title">Choose Your Role</h1>
+      <p class="hero-sub">
+        Pick the position you want to simulate. You'll receive real tasks each week,
+        submit your work, and get feedback from your virtual manager.
+      </p>
+    </div>
+
+    <!-- Search row -->
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input class="search-input" type="text" placeholder="Search roles, companies, skills…" readonly />
+      </div>
+      <button class="filter-pill active">All Fields</button>
+      <button class="filter-pill">Data & Analytics</button>
+      <button class="filter-pill">Remote</button>
+    </div>
+
+    <p class="results-meta"><strong>1</strong> position available</p>
+
+    <!-- Board layout -->
+    <div class="board-layout">
+
+      <!-- Left: job list -->
+      <div class="job-list">
+        <div class="job-list-card active" data-job="junior_data_analyst">
+          <div class="jlc-top">
+            <div class="jlc-logo">🏢</div>
+            <div class="jlc-info">
+              <p class="jlc-title">Junior Data Analyst</p>
+              <p class="jlc-company">NovaRetail Inc.</p>
+            </div>
+          </div>
+          <div class="jlc-tags">
+            <span class="jlc-tag">Remote</span>
+            <span class="jlc-tag">Full-time</span>
+            <span class="jlc-tag">Entry Level</span>
+            <span class="jlc-tag green">Simulation</span>
+          </div>
+          <div class="jlc-footer">
+            <span>Posted today</span>
+            <span>24-week program</span>
+          </div>
+        </div>
+        <!-- More job paths will appear here in future updates -->
+      </div>
+
+      <!-- Right: job detail -->
+      <div class="job-detail">
+
+        <!-- Header -->
+        <div class="jd-header">
+          <div class="jd-header-top">
+            <div class="jd-logo">🏢</div>
+            <div class="jd-header-info">
+              <p class="jd-company-name">NovaRetail Inc. · Data & Analytics Team</p>
+              <h2 class="jd-title">Junior Data Analyst</h2>
+              <p class="jd-team">Reporting to Sophie Chen, Senior Data Analyst</p>
+            </div>
+          </div>
+
+          <div class="jd-meta-row">
+            <span class="jd-meta-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              Remote
+            </span>
+            <span class="jd-meta-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              Full-time
+            </span>
+            <span class="jd-meta-chip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Entry Level
+            </span>
+            <span class="jd-meta-chip accent">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              24-week program
+            </span>
+            <span class="jd-meta-chip green">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Open · Apply now
+            </span>
+          </div>
+
+          <button class="btn-apply" id="btn-apply">
+            <span class="spinner" id="apply-spinner" hidden></span>
+            Apply &amp; Start Simulation
+          </button>
+          <div class="error-msg" id="apply-error" hidden>
+            Something went wrong. Please try again.
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="jd-body">
+
+          <!-- About the company -->
+          <div>
+            <p class="jd-section-title">About the Company</p>
+            <p class="jd-text">
+              NovaRetail Inc. is a fast-growing e-commerce and retail company with operations in
+              5 countries across North America and Europe. With over 2 million customers and
+              hundreds of SKUs across Electronics, Apparel, Home, and Food categories, our
+              Data &amp; Analytics team sits at the center of every major business decision —
+              from inventory optimization to customer retention. This is a simulation of working
+              in our real analytics department.
+            </p>
+          </div>
+
+          <!-- About the role -->
+          <div>
+            <p class="jd-section-title">About the Role</p>
+            <p class="jd-text">
+              As a Junior Data Analyst, you'll work directly under Sophie Chen to support the
+              operations and business teams with data-driven insights. Each week you'll receive
+              3 tasks — ranging from SQL queries and Python scripts to Excel reports and
+              dashboard updates. Sophie will review your work and give you real feedback,
+              just like a first job.
+            </p>
+          </div>
+
+          <!-- Responsibilities -->
+          <div>
+            <p class="jd-section-title">Responsibilities</p>
+            <div class="jd-list">
+              <div class="jd-list-item">Clean and transform sales and inventory datasets</div>
+              <div class="jd-list-item">Create weekly reports for the operations team</div>
+              <div class="jd-list-item">Analyze customer behavior trends</div>
+              <div class="jd-list-item">Maintain and update Power BI dashboards</div>
+              <div class="jd-list-item">Handle ad-hoc data requests from the business team</div>
+            </div>
+          </div>
+
+          <!-- Requirements -->
+          <div>
+            <p class="jd-section-title">Requirements</p>
+            <div class="jd-list">
+              <div class="jd-list-item">No prior professional experience needed — this is an entry-level simulation</div>
+              <div class="jd-list-item">Basic comfort with spreadsheets (Excel or Google Sheets)</div>
+              <div class="jd-list-item">Genuine curiosity about data, business metrics, and retail</div>
+              <div class="jd-list-item">Ability to follow structured instructions and meet weekly deadlines</div>
+              <div class="jd-list-item">Willingness to learn SQL and Python (training is built into the program)</div>
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div>
+            <p class="jd-section-title">Skills You'll Work With</p>
+            <div class="jd-tags">
+              <span class="jd-tag">SQL</span>
+              <span class="jd-tag">Python</span>
+              <span class="jd-tag">Excel</span>
+              <span class="jd-tag">Power BI</span>
+              <span class="jd-tag">Data Cleaning</span>
+              <span class="jd-tag">Reporting</span>
+            </div>
+          </div>
+
+          <!-- Manager -->
+          <div>
+            <p class="jd-section-title">Your Manager</p>
+            <div class="jd-manager">
+              <div class="jd-manager-avatar">SC</div>
+              <div>
+                <p class="jd-manager-name">Sophie Chen</p>
+                <p class="jd-manager-title">Senior Data Analyst · NovaRetail Inc.</p>
+                <p class="manager-online">Active in simulation</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const API_BASE   = 'http://localhost:8000';
+    const token      = localStorage.getItem('token');
+    const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+    // ── Cursor glow ───────────────────────────────────────────────────────────
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let glowX  = mouseX, glowY = mouseY;
+
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    (function tick() {
+      glowX += (mouseX - glowX) * 0.07;
+      glowY += (mouseY - glowY) * 0.07;
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+      requestAnimationFrame(tick);
+    })();
+
+    // ── Navbar ────────────────────────────────────────────────────────────────
+    if (cachedUser.full_name) {
+      const initials = cachedUser.full_name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      document.getElementById('nav-avatar').textContent   = initials;
+      document.getElementById('nav-username').textContent = cachedUser.username || '';
+    }
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    });
+
+    // ── Check if user already has a job path → redirect to dashboard ──────────
+    const forcePreview = new URLSearchParams(window.location.search).get('force') === 'true';
+
+    async function checkExistingProgress() {
+      if (forcePreview) return;
+      try {
+        const res = await fetch(`${API_BASE}/users/me/progress`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.replace('login.html');
+          return;
+        }
+        if (res.ok) {
+          window.location.replace('dashboard.html');
+        }
+        // 404 means no job path selected yet — stay on this page
+      } catch {
+        // API unreachable — show the page anyway
+      }
+    }
+
+    // ── Apply ─────────────────────────────────────────────────────────────────
+    async function applyToJob(jobPathId) {
+      const btn     = document.getElementById('btn-apply');
+      const spinner = document.getElementById('apply-spinner');
+      const errEl   = document.getElementById('apply-error');
+
+      btn.disabled    = true;
+      spinner.hidden  = false;
+      errEl.hidden    = true;
+
+      try {
+        const res = await fetch(`${API_BASE}/users/me/progress`, {
+          method:  'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type':  'application/json',
+          },
+          body: JSON.stringify({ job_path_id: jobPathId }),
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.replace('login.html');
+          return;
+        }
+
+        // 201 created or 409 already exists → both go to dashboard
+        if (res.status === 201 || res.status === 409) {
+          window.location.replace('dashboard.html');
+          return;
+        }
+
+        throw new Error('Unexpected error.');
+      } catch {
+        errEl.hidden  = false;
+        btn.disabled  = false;
+        spinner.hidden = true;
+      }
+    }
+
+    document.getElementById('btn-apply').addEventListener('click', () => {
+      applyToJob('junior_data_analyst');
+    });
+
+    checkExistingProgress();
+  </script>
+
+</body>
+</html>

@@ -321,6 +321,9 @@ class LoginRequest(BaseModel):
     username: str
     password: str
 
+class SelectJobPathRequest(BaseModel):
+    job_path_id: str
+
 # ── Shared response shape ─────────────────────────────────────────────────────
 def _user_payload(user: dict) -> dict:
     return {"id": user["id"], "username": user["username"], "full_name": user["full_name"]}
@@ -374,7 +377,10 @@ def me(current_user: dict = Depends(get_current_user)):
 
 @app.get("/users/me/progress")
 def get_progress(current_user: dict = Depends(get_current_user)):
-    progress = get_or_create_progress(current_user["id"])
+    result = _supabase.table("user_progress").select("*").eq("user_id", current_user["id"]).execute()
+    if not result.data:
+        raise HTTPException(status_code=404, detail="No job path selected.")
+    progress = result.data[0]
     job_path = JOB_PATHS.get(progress["job_path_id"], {})
     return {
         "current_week":  progress["current_week"],
@@ -386,6 +392,30 @@ def get_progress(current_user: dict = Depends(get_current_user)):
             "duration_weeks": job_path.get("duration_weeks"),
         },
     }
+
+
+@app.post("/users/me/progress", status_code=status.HTTP_201_CREATED)
+def select_job_path(
+    body: SelectJobPathRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    if body.job_path_id not in JOB_PATHS:
+        raise HTTPException(status_code=400, detail="Invalid job path ID.")
+
+    existing = (
+        _supabase.table("user_progress")
+        .select("id")
+        .eq("user_id", current_user["id"])
+        .execute()
+    )
+    if existing.data:
+        raise HTTPException(status_code=409, detail="Job path already selected.")
+
+    result = _supabase.table("user_progress").insert({
+        "user_id":     current_user["id"],
+        "job_path_id": body.job_path_id,
+    }).execute()
+    return result.data[0]
 
 
 @app.post("/users/me/advance")
