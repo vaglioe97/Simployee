@@ -53,7 +53,7 @@ Format:
 ]"""
 
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-sonnet-4-6",
         max_tokens=1000,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -129,7 +129,7 @@ Instructions for your response:
 - End with either a follow-up question or a next step, like a real manager would"""
 
     message = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-sonnet-4-6",
         max_tokens=600,
         messages=[{"role": "user", "content": prompt}]
     )

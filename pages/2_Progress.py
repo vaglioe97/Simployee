@@ -32,16 +32,18 @@ st.progress((week - 1) / total_weeks)
 st.caption(f"{pct}% through the program · {total_weeks - week + 1} weeks remaining")
 st.divider()
 
-# ── Stats ─────────────────────────────────────────────────────────────────────
-all_tasks = []
+# ── Load all tasks once ───────────────────────────────────────────────────────
+tasks_by_week = {}
 for w in range(1, week + 1):
-    tasks = get_tasks(user["id"], w)
-    all_tasks.extend([dict(t) for t in tasks])
+    week_tasks = [dict(t) for t in get_tasks(user["id"], w)]
+    if week_tasks:
+        tasks_by_week[w] = week_tasks
 
-total_tasks = len(all_tasks)
+all_tasks = [t for tasks in tasks_by_week.values() for t in tasks]
+
+# ── Stats ─────────────────────────────────────────────────────────────────────
 completed = sum(1 for t in all_tasks if t["status"] == "reviewed")
 pending = sum(1 for t in all_tasks if t["status"] == "pending")
-submitted = sum(1 for t in all_tasks if t["status"] == "submitted")
 
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Weeks Completed", week - 1)
@@ -55,7 +57,7 @@ st.divider()
 st.subheader("Weekly Breakdown")
 
 for w in range(1, week + 1):
-    tasks = [dict(t) for t in get_tasks(user["id"], w)]
+    tasks = tasks_by_week.get(w, [])
 
     if not tasks:
         continue

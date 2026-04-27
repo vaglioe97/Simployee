@@ -12,11 +12,6 @@ from core.ai_engine import generate_weekly_tasks, evaluate_submission
 
 st.set_page_config(page_title="Tasks · Simployee", page_icon="📋", layout="centered")
 
-from core.database import (
-    get_user_progress, get_tasks, save_task,
-    submit_task, save_feedback, advance_week, resubmit_task
-)
-
 # ── Auth guard ────────────────────────────────────────────────────────────────
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
     st.warning("Please log in first.")
