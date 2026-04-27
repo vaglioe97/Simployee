@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simployee — Dashboard</title>
+  <!-- Auth guard: redirect before any paint if no token -->
+  <script>if (!localStorage.getItem('token')) window.location.replace('login.html');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0F172A;
+      --bg-card:     #1E293B;
+      --bg-card-2:   #162032;
+      --accent:      #6366F1;
+      --accent-dark: #4F46E5;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-dim:  rgba(99, 102, 241, 0.12);
+      --text:        #F8FAFC;
+      --text-muted:  #94A3B8;
+      --border:      rgba(99, 102, 241, 0.18);
+      --border-card: rgba(255, 255, 255, 0.06);
+      --green:       #34D399;
+      --green-dim:   rgba(52, 211, 153, 0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Cursor glow ───────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Navbar ────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .nav-logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0.4rem 0.85rem;
+      border-radius: 7px;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); background: var(--accent-dim); }
+    .nav-links a.active { color: var(--text); background: var(--accent-dim); }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-avatar {
+      width: 30px; height: 30px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .btn-logout {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 7px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .btn-logout:hover {
+      color: var(--text);
+      border-color: var(--border);
+      background: var(--accent-dim);
+    }
+
+    /* ── Page layout ───────────────────────────────────────────────────────── */
+    .page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 96px 1.5rem 4rem;
+    }
+
+    /* ── Skeleton shimmer ──────────────────────────────────────────────────── */
+    .skeleton {
+      display: inline-block;
+      background: linear-gradient(90deg, #1E293B 25%, #2D3F5A 50%, #1E293B 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+      color: transparent;
+      user-select: none;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Welcome section ───────────────────────────────────────────────────── */
+    .welcome {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .welcome-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+
+    .welcome-name {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      min-width: 180px;
+    }
+
+    .week-badge {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.3rem;
+    }
+
+    .week-badge-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .week-badge-value {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Job card ──────────────────────────────────────────────────────────── */
+    .job-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.25s;
+    }
+
+    .job-card:hover { border-color: var(--border); }
+
+    /* Subtle left accent bar */
+    .job-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, #6366F1, #818CF8);
+      border-radius: 3px 0 0 3px;
+    }
+
+    .job-card-left { padding-left: 0.5rem; }
+
+    .job-company-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .company-icon {
+      width: 36px; height: 36px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .company-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .job-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .job-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 99px;
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tag-accent {
+      color: #818CF8;
+      border-color: var(--border);
+      background: var(--accent-dim);
+    }
+
+    .manager-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .manager-dot {
+      width: 7px; height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .job-card-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.6rem;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--green);
+      background: var(--green-dim);
+      border: 1px solid rgba(52, 211, 153, 0.2);
+      border-radius: 99px;
+      padding: 0.25rem 0.75rem;
+    }
+
+    .status-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* ── Metrics grid ──────────────────────────────────────────────────────── */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .metric-card {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+
+    .metric-card:hover {
+      border-color: var(--border);
+      transform: translateY(-2px);
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    .metric-value.accent {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Progress bar ──────────────────────────────────────────────────────── */
+    .progress-wrap {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-header span {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .progress-header strong {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .progress-bar-bg {
+      background: rgba(255,255,255,0.05);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #6366F1, #818CF8);
+      transition: width 0.8s ease;
+    }
+
+    /* ── CTA button ────────────────────────────────────────────────────────── */
+    .btn-tasks {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      transition: box-shadow 0.25s, transform 0.2s;
+    }
+
+    .btn-tasks:hover {
+      box-shadow: 0 0 28px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-tasks:active { transform: translateY(0); }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .job-card-right { align-items: flex-start; }
+      .welcome { flex-direction: column; }
+      .week-badge { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-glow"></div>
+
+  <!-- ── Navbar ────────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="dashboard.html" class="nav-logo">💼 <span>Simployee</span></a>
+
+    <ul class="nav-links">
+      <li><a href="dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="#">Tasks</a></li>
+      <li><a href="#">Progress</a></li>
+    </ul>
+
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">—</div>
+        <span id="nav-username">Loading...</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">Log Out</button>
+    </div>
+  </nav>
+
+  <!-- ── Dashboard content ─────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- Welcome -->
+    <div class="welcome">
+      <div>
+        <p class="welcome-label">Dashboard</p>
+        <h1 class="welcome-name" id="welcome-name">
+          <span class="skeleton">Loading user name...</span>
+        </h1>
+      </div>
+      <div class="week-badge">
+        <span class="week-badge-label">Current week</span>
+        <span class="week-badge-value">1 / 24</span>
+      </div>
+    </div>
+
+    <!-- Job card -->
+    <div class="job-card">
+      <div class="job-card-left">
+        <div class="job-company-row">
+          <div class="company-icon">🏢</div>
+          <span class="company-name">NovaRetail Inc.</span>
+        </div>
+        <h2 class="job-title">Junior Data Analyst</h2>
+        <div class="job-meta">
+          <span class="tag tag-accent">Retail & E-commerce</span>
+          <span class="tag">Entry Level</span>
+          <span class="tag">24 weeks</span>
+        </div>
+        <div class="manager-row">
+          <span class="manager-dot"></span>
+          <span>Manager: <strong>Sophie Chen</strong> — Senior Data Analyst</span>
+        </div>
+      </div>
+      <div class="job-card-right">
+        <div class="status-badge">
+          <span class="dot"></span>
+          Active
+        </div>
+        <div class="job-meta" style="justify-content: flex-end; margin: 0;">
+          <span class="tag">SQL</span>
+          <span class="tag">Python</span>
+          <span class="tag">Excel</span>
+          <span class="tag">Power BI</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <p class="metric-label">Week</p>
+        <p class="metric-value accent">1</p>
+        <p class="metric-sub">of 24 total</p>
+      </div>
+      <div class="metric-card">
+        <p class="metric-label">Tasks Completed</p>
+        <p class="metric-value">0</p>
+        <p class="metric-sub">this week</p>
+      </div>
+      <div class="metric-card">
+        <p class="metric-label">Tasks Pending</p>
+        <p class="metric-value">3</p>
+        <p class="metric-sub">ready to start</p>
+      </div>
+      <div class="metric-card">
+        <p class="metric-label">Program</p>
+        <p class="metric-value">4<span style="font-size:1rem; font-weight:600">%</span></p>
+        <p class="metric-sub">complete</p>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span>Overall progress</span>
+        <strong>Week 1 of 24</strong>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width: 4%"></div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button class="btn-tasks" id="btn-tasks">
+      Go to Tasks
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:8000';
+    const token    = localStorage.getItem('token');
+
+    // ── Cursor glow ───────────────────────────────────────────────────────────
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let glowX  = mouseX, glowY = mouseY;
+
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    (function tick() {
+      glowX += (mouseX - glowX) * 0.07;
+      glowY += (mouseY - glowY) * 0.07;
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+      requestAnimationFrame(tick);
+    })();
+
+    // ── Populate UI with user data ────────────────────────────────────────────
+    function populateUser(user) {
+      const initials = user.full_name
+        .split(' ')
+        .map(w => w[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase();
+
+      document.getElementById('welcome-name').textContent  = `Welcome back, ${user.full_name} 👋`;
+      document.getElementById('nav-username').textContent  = user.username;
+      document.getElementById('nav-avatar').textContent    = initials;
+    }
+
+    // ── Load user from API, fallback to localStorage cache ───────────────────
+    async function loadUser() {
+      // Try cached user immediately to avoid blank flash
+      const cached = localStorage.getItem('user');
+      if (cached) populateUser(JSON.parse(cached));
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.replace('login.html');
+          return;
+        }
+
+        const user = await res.json();
+        localStorage.setItem('user', JSON.stringify(user));
+        populateUser(user);
+      } catch {
+        // API unreachable — cached data already shown, nothing to do
+        if (!cached) {
+          document.getElementById('welcome-name').textContent = 'Welcome back 👋';
+        }
+      }
+    }
+
+    loadUser();
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    });
+  </script>
+
+</body>
+</html>

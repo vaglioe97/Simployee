@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simployee — Log In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0F172A;
+      --bg-card:     #1A2744;
+      --accent:      #6366F1;
+      --accent-dark: #4F46E5;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-dim:  rgba(99, 102, 241, 0.12);
+      --text:        #F8FAFC;
+      --text-muted:  #94A3B8;
+      --border:      rgba(99, 102, 241, 0.22);
+      --border-card: rgba(255, 255, 255, 0.07);
+      --input-bg:    rgba(15, 23, 42, 0.6);
+      --error:       #F87171;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Background dot-grid ───────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(99,102,241,0.13) 1px, transparent 1px);
+      background-size: 32px 32px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Cursor glow ───────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Layout ────────────────────────────────────────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      gap: 1.5rem;
+    }
+
+    /* ── Logo link ─────────────────────────────────────────────────────────── */
+    .logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Card ──────────────────────────────────────────────────────────────── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      padding: 2.25rem 2rem;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4), 0 0 0 1px var(--border-card);
+    }
+
+    /* ── Tabs ──────────────────────────────────────────────────────────────── */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 2rem;
+    }
+
+    .tab-btn {
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      border-radius: 7px;
+      padding: 0.55rem 1rem;
+      cursor: pointer;
+      transition: color 0.2s, background 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+      background: var(--accent);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    }
+
+    /* ── Tab panels ────────────────────────────────────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Form header ───────────────────────────────────────────────────────── */
+    .form-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .form-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Form fields ───────────────────────────────────────────────────────── */
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
+      letter-spacing: 0.02em;
+    }
+
+    .field input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--input-bg);
+      border: 1px solid var(--border-card);
+      border-radius: 9px;
+      padding: 0.65rem 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .field input::placeholder { color: #475569; }
+
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    /* ── Password row ──────────────────────────────────────────────────────── */
+    .field-row {
+      position: relative;
+    }
+
+    .field-row input { padding-right: 2.75rem; }
+
+    .toggle-pw {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .toggle-pw:hover { color: var(--text); }
+
+    /* ── Forgot password ───────────────────────────────────────────────────── */
+    .forgot {
+      display: block;
+      text-align: right;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+      transition: color 0.2s;
+    }
+
+    .forgot:hover { color: var(--accent); }
+
+    /* ── Submit button ─────────────────────────────────────────────────────── */
+    .btn-submit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      transition: box-shadow 0.25s, transform 0.2s;
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 0 28px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active { transform: translateY(0); }
+
+    /* ── Divider ───────────────────────────────────────────────────────────── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-card);
+    }
+
+    /* ── Terms note ────────────────────────────────────────────────────────── */
+    .terms-note {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .terms-note a {
+      color: #818CF8;
+      transition: color 0.2s;
+    }
+
+    .terms-note a:hover { color: var(--accent); }
+
+    /* ── Error message ─────────────────────────────────────────────────────── */
+    .error-msg {
+      font-size: 0.82rem;
+      color: #F87171;
+      background: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.2);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      margin-top: 0.85rem;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* ── Button loading state ──────────────────────────────────────────────── */
+    .btn-submit:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* ── Back link ─────────────────────────────────────────────────────────── */
+    .back-link {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-glow"></div>
+
+  <main class="page">
+
+    <a href="index.html" class="logo">💼 <span>Simployee</span></a>
+
+    <div class="card">
+
+      <!-- ── Tabs ─────────────────────────────────────────────────────────── -->
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="login"  role="tab" aria-selected="true">Log In</button>
+        <button class="tab-btn"        data-tab="signup" role="tab" aria-selected="false">Create Account</button>
+      </div>
+
+      <!-- ── Log In panel ─────────────────────────────────────────────────── -->
+      <div class="tab-panel active" id="panel-login">
+        <div class="form-header">
+          <h2>Welcome back</h2>
+          <p>Log in to continue your simulation.</p>
+        </div>
+
+        <form id="form-login">
+          <div class="field">
+            <label for="login-username">Username</label>
+            <input id="login-username" type="text" placeholder="your_username" autocomplete="username" />
+          </div>
+
+          <div class="field">
+            <label for="login-password">Password</label>
+            <div class="field-row">
+              <input id="login-password" type="password" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" class="toggle-pw" aria-label="Show password" data-target="login-password">
+                <svg id="eye-login" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <a href="#" class="forgot">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btn-login">
+            Log In
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <p class="error-msg" id="login-error"></p>
+        </form>
+      </div>
+
+      <!-- ── Create Account panel ─────────────────────────────────────────── -->
+      <div class="tab-panel" id="panel-signup">
+        <div class="form-header">
+          <h2>Start your journey</h2>
+          <p>Create an account to begin your simulation.</p>
+        </div>
+
+        <form id="form-signup">
+          <div class="field">
+            <label for="signup-name">Full Name</label>
+            <input id="signup-name" type="text" placeholder="Jane Smith" autocomplete="name" />
+          </div>
+
+          <div class="field">
+            <label for="signup-username">Username</label>
+            <input id="signup-username" type="text" placeholder="jane_smith" autocomplete="username" />
+          </div>
+
+          <div class="field">
+            <label for="signup-password">Password</label>
+            <div class="field-row">
+              <input id="signup-password" type="password" placeholder="At least 6 characters" autocomplete="new-password" />
+              <button type="button" class="toggle-pw" aria-label="Show password" data-target="signup-password">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="signup-confirm">Confirm Password</label>
+            <div class="field-row">
+              <input id="signup-confirm" type="password" placeholder="••••••••" autocomplete="new-password" />
+              <button type="button" class="toggle-pw" aria-label="Show password" data-target="signup-confirm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" id="btn-signup">
+            Create Account
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <p class="error-msg" id="signup-error"></p>
+
+          <p class="terms-note">
+            By creating an account you agree to our
+            <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+          </p>
+        </form>
+      </div>
+
+    </div>
+
+    <a href="index.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to home
+    </a>
+
+  </main>
+
+  <script>
+    const API_BASE = 'http://localhost:8000';
+
+    // ── Cursor glow ───────────────────────────────────────────────────────────
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let glowX  = mouseX, glowY = mouseY;
+
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+
+    (function tick() {
+      glowX += (mouseX - glowX) * 0.07;
+      glowY += (mouseY - glowY) * 0.07;
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+      requestAnimationFrame(tick);
+    })();
+
+    // ── Tab switching ─────────────────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+        document.getElementById(`panel-${btn.dataset.tab}`).classList.add('active');
+      });
+    });
+
+    // ── Password visibility toggle ────────────────────────────────────────────
+    document.querySelectorAll('.toggle-pw').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.getElementById(btn.dataset.target);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        btn.querySelector('svg').style.opacity = input.type === 'text' ? '1' : '0.5';
+      });
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function showError(id, msg) {
+      const el = document.getElementById(id);
+      el.textContent = msg;
+      el.classList.add('visible');
+    }
+
+    function clearError(id) {
+      const el = document.getElementById(id);
+      el.textContent = '';
+      el.classList.remove('visible');
+    }
+
+    function setLoading(btn, loading) {
+      btn.disabled = loading;
+      btn.style.opacity = loading ? '0.65' : '';
+    }
+
+    async function postJSON(endpoint, body) {
+      const res = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Something went wrong.');
+      return data;
+    }
+
+    function onSuccess(data) {
+      localStorage.setItem('token',     data.token);
+      localStorage.setItem('user',      JSON.stringify(data.user));
+      window.location.href = 'dashboard.html';
+    }
+
+    // ── Log In ────────────────────────────────────────────────────────────────
+    document.getElementById('form-login').addEventListener('submit', async e => {
+      e.preventDefault();
+      clearError('login-error');
+
+      const username = document.getElementById('login-username').value.trim();
+      const password = document.getElementById('login-password').value;
+
+      if (!username || !password) {
+        showError('login-error', 'Please fill in all fields.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-login');
+      setLoading(btn, true);
+
+      try {
+        const data = await postJSON('/auth/login', { username, password });
+        onSuccess(data);
+      } catch (err) {
+        showError('login-error', err.message);
+        setLoading(btn, false);
+      }
+    });
+
+    // ── Create Account ────────────────────────────────────────────────────────
+    document.getElementById('form-signup').addEventListener('submit', async e => {
+      e.preventDefault();
+      clearError('signup-error');
+
+      const full_name = document.getElementById('signup-name').value.trim();
+      const username  = document.getElementById('signup-username').value.trim();
+      const password  = document.getElementById('signup-password').value;
+      const confirm   = document.getElementById('signup-confirm').value;
+
+      if (!full_name || !username || !password || !confirm) {
+        showError('signup-error', 'Please fill in all fields.');
+        return;
+      }
+      if (password !== confirm) {
+        showError('signup-error', 'Passwords do not match.');
+        return;
+      }
+      if (password.length < 6) {
+        showError('signup-error', 'Password must be at least 6 characters.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-signup');
+      setLoading(btn, true);
+
+      try {
+        const data = await postJSON('/auth/register', { full_name, username, password });
+        onSuccess(data);
+      } catch (err) {
+        showError('signup-error', err.message);
+        setLoading(btn, false);
+      }
+    });
+  </script>
+
+</body>
+</html>
