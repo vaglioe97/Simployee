@@ -11,6 +11,7 @@
   <style>
     /* ── Reset & Base ──────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
 
     :root {
       --bg:          #0F172A;
@@ -929,42 +930,38 @@
     }
 
     // ── API: load user progress ───────────────────────────────────────────────
-    // TODO: GET /users/me/progress — fetch current week from user_progress table
     async function loadProgress() {
-      // Placeholder: always week 1 until endpoint exists
-      currentWeek = 1;
-      return currentWeek;
+      const res = await fetch(`${API_BASE}/users/me/progress`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (res.status === 401) { logout(); return; }
+      if (!res.ok) throw new Error('Failed to load progress.');
+      const data = await res.json();
+      currentWeek = data.current_week ?? 1;
     }
 
     // ── API: load tasks ───────────────────────────────────────────────────────
-    // TODO: GET /tasks?week={week} — fetch tasks for the current week
     async function loadTasks() {
       const res = await fetch(`${API_BASE}/tasks?week=${currentWeek}`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       if (res.status === 401) { logout(); return []; }
       if (!res.ok) throw new Error('Failed to load tasks.');
-      return res.json();
+      return await res.json();
     }
 
     // ── API: generate tasks ───────────────────────────────────────────────────
-    // TODO: POST /tasks/generate — trigger AI task generation for current week
     async function generateTasksAPI() {
       const res = await fetch(`${API_BASE}/tasks/generate`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ week: currentWeek }),
+        headers: { 'Authorization': `Bearer ${token}` },
       });
       if (res.status === 401) { logout(); return []; }
       if (!res.ok) throw new Error('Failed to generate tasks. Try again.');
-      return res.json();
+      return await res.json();
     }
 
     // ── API: submit task ──────────────────────────────────────────────────────
-    // TODO: POST /tasks/{id}/submit — submit text + optional file, get AI feedback
     async function submitTaskAPI(taskId, text, file) {
       const formData = new FormData();
       formData.append('submission_text', text);
@@ -977,11 +974,10 @@
       });
       if (res.status === 401) { logout(); return null; }
       if (!res.ok) throw new Error('Failed to submit. Try again.');
-      return res.json();
+      return await res.json();
     }
 
     // ── API: resubmit task ────────────────────────────────────────────────────
-    // TODO: POST /tasks/{id}/resubmit — clear submission/feedback, set status back to pending
     async function resubmitTaskAPI(taskId) {
       const res = await fetch(`${API_BASE}/tasks/${taskId}/resubmit`, {
         method: 'POST',
@@ -989,11 +985,10 @@
       });
       if (res.status === 401) { logout(); return null; }
       if (!res.ok) throw new Error('Failed to resubmit. Try again.');
-      return res.json();
+      return await res.json();
     }
 
     // ── API: advance week ─────────────────────────────────────────────────────
-    // TODO: POST /users/me/advance — increment current_week in user_progress
     async function advanceWeekAPI() {
       const res = await fetch(`${API_BASE}/users/me/advance`, {
         method: 'POST',
@@ -1001,7 +996,7 @@
       });
       if (res.status === 401) { logout(); return null; }
       if (!res.ok) throw new Error('Failed to advance week. Try again.');
-      return res.json();
+      return await res.json();
     }
 
     // ── Handlers ──────────────────────────────────────────────────────────────
