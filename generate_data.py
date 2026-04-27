@@ -78,7 +78,46 @@ def generate_sales(filepath, num_rows=500):
 
     print(f"Generated {num_rows} rows -> {filepath}")
 
+def generate_categories(filepath):
+    import openpyxl
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "categories_raw"
+
+    ws.append(["category_id", "category_name", "department"])
+
+    raw_categories = [
+        (1,  "Electronics",   "Tech"),
+        (2,  "electronics",   "Tech"),
+        (3,  "ELECTRONICS",   "Tech"),
+        (4,  "Apparel",       "Fashion"),
+        (5,  "apparel",       "Fashion"),
+        (6,  "Apparel ",      "Fashion"),   # trailing space
+        (7,  "Home",          "Living"),
+        (8,  "HOME",          "Living"),
+        (9,  "home goods",    "Living"),
+        (10, "Food",          "Grocery"),
+        (11, "food",          "Grocery"),
+        (12, "FOOD & BEV",    "Grocery"),
+        (13, "Sports",        "Active"),
+        (14, "sports",        "Active"),
+        (15, "Sport",         "Active"),    # typo
+        (16, "Office",        "Work"),
+        (17, "office",        "Work"),
+        (18, "Office Supplies","Work"),
+        (19, "",              "Unknown"),   # blank
+        (20, "N/A",           "Unknown"),  # invalid
+        (21, "TBD",           "Unknown"),  # invalid
+    ]
+
+    for row in raw_categories:
+        ws.append(row)
+
+    wb.save(filepath)
+    print(f"Generated categories -> {filepath}")
+
 if __name__ == "__main__":
     import os
     os.makedirs("data", exist_ok=True)
     generate_sales("data/novaretail_sales_q1_2024.csv")
+    generate_categories("data/novaretail_categories_raw.xlsx")

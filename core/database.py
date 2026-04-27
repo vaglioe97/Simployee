@@ -146,3 +146,13 @@ def advance_week(user_id):
     )
     conn.commit()
     conn.close()
+
+def resubmit_task(task_id):
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute(
+        'UPDATE tasks SET status = ?, submission = NULL, feedback = NULL WHERE id = ?',
+        ('pending', task_id)
+    )
+    conn.commit()
+    conn.close()

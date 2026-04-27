@@ -1,14 +1,21 @@
 import streamlit as st
 import pandas as pd
 import os
+import io
+import openpyxl
 from core.database import (
     get_user_progress, get_tasks, save_task,
-    submit_task, save_feedback, advance_week
+    submit_task, save_feedback, advance_week, resubmit_task
 )
 from core.job_paths import get_job_path
 from core.ai_engine import generate_weekly_tasks, evaluate_submission
 
 st.set_page_config(page_title="Tasks · Simployee", page_icon="📋", layout="centered")
+
+from core.database import (
+    get_user_progress, get_tasks, save_task,
+    submit_task, save_feedback, advance_week, resubmit_task
+)
 
 # ── Auth guard ────────────────────────────────────────────────────────────────
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
@@ -46,6 +53,25 @@ if os.path.exists(dataset_path):
                 data=csv_bytes,
                 file_name="novaretail_sales_q1_2024.csv",
                 mime="text/csv",
+                use_container_width=True
+            )
+    st.divider()
+
+categories_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'novaretail_categories_raw.xlsx')
+if os.path.exists(categories_path):
+    with open(categories_path, 'rb') as f:
+        xlsx_bytes = f.read()
+    with st.container(border=True):
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**📂 NovaRetail Categories — Raw Export**")
+            st.caption("21 rows · categories table · inconsistent naming to clean up")
+        with col2:
+            st.download_button(
+                label="⬇️ Download Excel",
+                data=xlsx_bytes,
+                file_name="novaretail_categories_raw.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
     st.divider()
@@ -130,16 +156,25 @@ else:
                 file_name = None
 
                 if uploaded_file:
+
+                    file_bytes = uploaded_file.getvalue()
                     file_name = uploaded_file.name
                     try:
                         if uploaded_file.name.endswith(".csv"):
-                            df = pd.read_csv(uploaded_file)
+                            df = pd.read_csv(io.BytesIO(file_bytes))
                             file_content = df.to_string(max_rows=100)
                         elif uploaded_file.name.endswith((".xlsx", ".xls")):
-                            df = pd.read_excel(uploaded_file)
-                            file_content = df.to_string(max_rows=100)
+                            wb = openpyxl.load_workbook(io.BytesIO(file_bytes))
+                            content_parts = []
+                            for sheet_name in wb.sheetnames:
+                                ws = wb[sheet_name]
+                                rows = []
+                                for row in ws.iter_rows(max_row=50, values_only=True):
+                                    rows.append("\t".join([str(c) if c is not None else "" for c in row]))
+                                content_parts.append(f"Sheet: {sheet_name}\n" + "\n".join(rows))
+                            file_content = "\n\n".join(content_parts)
                         else:
-                            file_content = uploaded_file.read().decode("utf-8", errors="ignore")
+                            file_content = file_bytes.decode("utf-8", errors="ignore")
                     except Exception as e:
                         file_content = f"Could not read file: {e}"
 
@@ -170,6 +205,10 @@ else:
         st.code(task["submission"])
         st.markdown("**Feedback from Sophie Chen**")
         st.success(task["feedback"])
+        st.write("")
+        if st.button("🔄 Resubmit Task", use_container_width=True, key=f"resubmit_{task['id']}"):
+            resubmit_task(task["id"])
+            st.rerun()
 
     # ── Advance week ──────────────────────────────────────────────────────────
     st.divider()
