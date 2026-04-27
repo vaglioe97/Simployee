@@ -351,6 +351,8 @@
       border-radius: 16px;
       padding: 2rem 1.75rem;
       transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
     }
 
     .feature-card:hover {
@@ -465,6 +467,39 @@
       font-size: 0.8rem;
       color: var(--text-muted);
     }
+
+    /* ── Cursor glow ───────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.13) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Card spotlight ────────────────────────────────────────────────────── */
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        280px circle at var(--mouse-x, -999px) var(--mouse-y, -999px),
+        rgba(99, 102, 241, 0.18),
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.35s;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-card > * { position: relative; z-index: 1; }
 
     /* ── Responsive ────────────────────────────────────────────────────────── */
     @media (max-width: 768px) {
@@ -626,6 +661,57 @@
 
     <p class="footer-copy">© 2026 Simployee. All rights reserved.</p>
   </footer>
+
+  <div id="cursor-glow"></div>
+
+  <script>
+    const glow        = document.getElementById('cursor-glow');
+    const heroContent = document.querySelector('.hero-content');
+    const featureCards = document.querySelectorAll('.feature-card');
+
+    let mouseX = window.innerWidth  / 2;
+    let mouseY = window.innerHeight / 2;
+
+    // Smoothed positions
+    let glowX = mouseX, glowY = mouseY;
+    let heroX = 0,      heroY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      // Card spotlight — update CSS vars instantly (no lag feels better here)
+      featureCards.forEach(card => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
+      });
+    });
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function tick() {
+      // 1. Cursor glow — smooth follow
+      glowX = lerp(glowX, mouseX, 0.07);
+      glowY = lerp(glowY, mouseY, 0.07);
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+
+      // 2. Hero parallax — moves opposite to cursor, lazy lerp
+      const cx = window.innerWidth  / 2;
+      const cy = window.innerHeight / 2;
+      const targetX = -((mouseX - cx) / cx) * 10;
+      const targetY = -((mouseY - cy) / cy) *  7;
+      heroX = lerp(heroX, targetX, 0.04);
+      heroY = lerp(heroY, targetY, 0.04);
+      if (heroContent) {
+        heroContent.style.transform = `translate(${heroX}px, ${heroY}px)`;
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    tick();
+  </script>
 
 </body>
 </html>
