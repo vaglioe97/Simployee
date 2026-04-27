@@ -1,164 +1,73 @@
-import sqlite3
-import os
+import streamlit as st
+from supabase import create_client, Client
 
-import tempfile
-
-# Use /tmp in cloud, local data/ folder in development
-if os.path.exists('/mount/src'):
-    DB_PATH = '/tmp/simployee.db'
-else:
-    DB_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'simployee.db')
-
-def get_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+@st.cache_resource
+def _client() -> Client:
+    return create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
 
 def init_db():
-    conn = get_connection()
-    c = conn.cursor()
-
-    # Tabla de usuarios
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            full_name TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-
-    # Tabla de progreso del usuario en un path
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS user_progress (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            job_path_id TEXT NOT NULL,
-            current_week INTEGER DEFAULT 1,
-            started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    ''')
-
-    # Tabla de tareas generadas
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS tasks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER NOT NULL,
-            week INTEGER NOT NULL,
-            title TEXT NOT NULL,
-            description TEXT NOT NULL,
-            deliverable TEXT NOT NULL,
-            status TEXT DEFAULT 'pending',
-            submission TEXT,
-            feedback TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
-        )
-    ''')
-
-    conn.commit()
-    conn.close()
+    pass  # Tables are managed in Supabase — see supabase_migration.sql
 
 def create_user(username, password, full_name):
-    conn = get_connection()
-    c = conn.cursor()
     try:
-        c.execute(
-            'INSERT INTO users (username, password, full_name) VALUES (?, ?, ?)',
-            (username, password, full_name)
-        )
-        conn.commit()
+        _client().table('users').insert({
+            'username': username,
+            'password': password,
+            'full_name': full_name
+        }).execute()
         return True
-    except sqlite3.IntegrityError:
+    except Exception:
         return False
-    finally:
-        conn.close()
 
 def get_user(username):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute('SELECT * FROM users WHERE username = ?', (username,))
-    user = c.fetchone()
-    conn.close()
-    return user
+    result = _client().table('users').select('*').eq('username', username).execute()
+    return result.data[0] if result.data else None
 
 def get_user_progress(user_id):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute('SELECT * FROM user_progress WHERE user_id = ?', (user_id,))
-    progress = c.fetchone()
-    conn.close()
-    return progress
+    result = _client().table('user_progress').select('*').eq('user_id', user_id).execute()
+    return result.data[0] if result.data else None
 
 def create_user_progress(user_id, job_path_id):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'INSERT INTO user_progress (user_id, job_path_id) VALUES (?, ?)',
-        (user_id, job_path_id)
-    )
-    conn.commit()
-    conn.close()
+    _client().table('user_progress').insert({
+        'user_id': user_id,
+        'job_path_id': job_path_id
+    }).execute()
 
 def get_tasks(user_id, week):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'SELECT * FROM tasks WHERE user_id = ? AND week = ?',
-        (user_id, week)
-    )
-    tasks = c.fetchall()
-    conn.close()
-    return tasks
+    result = _client().table('tasks').select('*').eq('user_id', user_id).eq('week', week).execute()
+    return result.data
 
 def save_task(user_id, week, title, description, deliverable):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'INSERT INTO tasks (user_id, week, title, description, deliverable) VALUES (?, ?, ?, ?, ?)',
-        (user_id, week, title, description, deliverable)
-    )
-    conn.commit()
-    conn.close()
+    _client().table('tasks').insert({
+        'user_id': user_id,
+        'week': week,
+        'title': title,
+        'description': description,
+        'deliverable': deliverable
+    }).execute()
 
 def submit_task(task_id, submission):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'UPDATE tasks SET submission = ?, status = ? WHERE id = ?',
-        (submission, 'submitted', task_id)
-    )
-    conn.commit()
-    conn.close()
+    _client().table('tasks').update({
+        'submission': submission,
+        'status': 'submitted'
+    }).eq('id', task_id).execute()
 
 def save_feedback(task_id, feedback):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'UPDATE tasks SET feedback = ?, status = ? WHERE id = ?',
-        (feedback, 'reviewed', task_id)
-    )
-    conn.commit()
-    conn.close()
+    _client().table('tasks').update({
+        'feedback': feedback,
+        'status': 'reviewed'
+    }).eq('id', task_id).execute()
 
 def advance_week(user_id):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'UPDATE user_progress SET current_week = current_week + 1 WHERE user_id = ?',
-        (user_id,)
-    )
-    conn.commit()
-    conn.close()
+    result = _client().table('user_progress').select('current_week').eq('user_id', user_id).execute()
+    current_week = result.data[0]['current_week']
+    _client().table('user_progress').update({
+        'current_week': current_week + 1
+    }).eq('user_id', user_id).execute()
 
 def resubmit_task(task_id):
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute(
-        'UPDATE tasks SET status = ?, submission = NULL, feedback = NULL WHERE id = ?',
-        ('pending', task_id)
-    )
-    conn.commit()
-    conn.close()
+    _client().table('tasks').update({
+        'status': 'pending',
+        'submission': None,
+        'feedback': None
+    }).eq('id', task_id).execute()
