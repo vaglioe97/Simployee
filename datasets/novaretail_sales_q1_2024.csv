@@ -1,0 +1,501 @@
+order_id,product_name,category,units_sold,unit_price,total_revenue,sale_date,region,store_id
+1,Sunglasses,Apparel,2,44.99,89.98,2024-01-04,East,104
+2,Sunglasses,Apparel,9,44.99,404.91,2024-01-12,International,107
+3,Running Shoes,Apparel,9,119.99,1079.91,2024-03-18,North,104
+4,Desk Lamp,Home,4,39.99,159.96,03/15/2024,International,105
+5,Green Tea Pack,Food,3,12.99,38.97,2024-03-30,West,106
+6,Green Tea Pack,Food,6,12.99,77.94,2024-01-14,North,107
+7,Backpack,Apparel,5,54.99,274.95,2024-01-06,West,102
+8,Water Bottle,Sports,5,19.99,99.95,2024-03-21,International,106
+9,Wireless Headphones,Electronics,4,89.99,359.96,2024-02-07,North,104
+10,Notebook Set,Office,6,14.99,89.94,2024-01-21,East,106
+11,Mechanical Keyboard,Electronics,2,129.99,259.98,2024-03-18,South,104
+12,Mechanical Keyboard,Electronics,9,129.99,1169.91,2024-01-29,East,101
+13,Coffee Maker,Home,7,79.99,559.93,2024-02-04,North,104
+14,Protein Powder,Food,6,49.99,299.94,2024-01-28,West,107
+15,Bluetooth Speaker,Electronics,5,59.99,299.95,2024-01-18,South,105
+16,Backpack,Apparel,7,54.99,384.93,2024-02-16,South,103
+17,Wireless Headphones,Electronics,2,89.99,179.98,2024-01-20,South,107
+18,Backpack,Apparel,8,54.99,439.92,2024-03-08,East,101
+19,Mechanical Keyboard,Electronics,9,129.99,1169.91,2024-02-04,East,102
+20,Wireless Headphones,Electronics,5,89.99,449.95,2024-03-05,South,102
+21,Sunglasses,Apparel,9,44.99,404.91,2024-03-18,South,103
+22,Green Tea Pack,Food,9,12.99,116.91,2024-01-01,International,106
+23,Coffee Maker,Home,5,79.99,399.95,2024-01-31,North,104
+24,USB-C Hub,Electronics,8,34.99,279.92,2024-01-09,International,103
+25,Water Bottle,Sports,3,19.99,59.97,2024-02-03,International,107
+26,Green Tea Pack,Food,4,12.99,51.96,2024-02-09,West,106
+27,,Electronics,4,34.99,139.96,2024-01-29,North,106
+28,Backpack,Apparel,4,54.99,219.96,2024-01-01,North,101
+29,Monitor Stand,Office,6,34.99,209.94,2024-01-10,International,104
+30,Water Bottle,Sports,3,19.99,59.97,2024-03-14,International,108
+31,Desk Lamp,Home,4,39.99,159.96,2024-01-13,North,107
+32,Monitor Stand,Office,1,34.99,34.99,2024-03-27,North,101
+33,Monitor Stand,Office,2,34.99,69.98,2024-02-01,South,104
+34,Bluetooth Speaker,Electronics,5,59.99,299.95,2024-02-29,South,102
+35,Water Bottle,Sports,2,19.99,39.98,2024-01-07,International,101
+36,Monitor Stand,Office,4,34.99,139.96,2024-01-22,West,108
+37,Mechanical Keyboard,Electronics,1,129.99,129.99,2024-01-22,West,101
+38,Green Tea Pack,Food,8,12.99,103.92,2024-02-06,West,108
+39,Wireless Headphones,Electronics,10,89.99,899.9,2024-03-10,North,106
+40,Water Bottle,Sports,9,19.99,179.91,2024-01-21,North,102
+41,USB-C Hub,Electronics,4,34.99,139.96,2024-02-21,North,104
+42,USB-C Hub,Electronics,7,34.99,244.93,2024-03-25,International,106
+43,Protein Powder,Food,6,49.99,299.94,2024-01-31,East,107
+44,Notebook Set,Office,6,14.99,89.94,2024-01-10,North,108
+45,USB-C Hub,Electronics,2,34.99,69.98,2024-03-09,South,105
+46,USB-C Hub,Electronics,4,34.99,139.96,2024-02-17,East,103
+47,Yoga Mat,Sports,10,29.99,299.9,2024-03-24,International,101
+48,Mechanical Keyboard,Electronics,2,129.99,259.98,2024-01-18,East,102
+49,Bluetooth Speaker,Electronics,5,59.99,299.95,2024-02-06,International,104
+50,Sunglasses,Apparel,5,44.99,224.95,2024-03-05,West,105
+51,USB-C Hub,Electronics,7,34.99,244.93,2024-02-05,North,101
+52,Yoga Mat,Sports,3,29.99,89.97,2024-02-26,International,107
+53,Mechanical Keyboard,Electronics,3,129.99,389.97,2024-03-10,North,106
+54,Bluetooth Speaker,Electronics,1,59.99,59.99,2024-02-09,East,101
+55,Running Shoes,Apparel,2,119.99,239.98,2024-02-15,International,107
+56,,Electronics,4,129.99,519.96,2024-01-21,South,107
+57,Coffee Maker,Home,7,79.99,559.93,2024-03-26,South,105
+58,Desk Lamp,Home,1,39.99,39.99,2024-03-01,South,104
+59,Yoga Mat,Sports,4,29.99,119.96,2024-01-29,North,104
+60,USB-C Hub,Electronics,5,34.99,174.95,2024-02-14,International,107
+61,Coffee Maker,Home,1,79.99,79.99,2024-01-15,East,103
+62,Wireless Headphones,Electronics,2,89.99,179.98,2024-03-17,West,106
+63,Backpack,Apparel,9,54.99,494.91,2024-01-15,West,104
+64,Wireless Headphones,Electronics,9,89.99,809.91,2024-03-09,South,106
+65,Mechanical Keyboard,Electronics,6,129.99,779.94,2024-03-20,East,102
+66,Yoga Mat,Sports,7,29.99,209.93,2024-02-11,West,105
+67,Sunglasses,Apparel,7,44.99,314.93,2024-03-27,South,105
+68,Yoga Mat,Sports,5,29.99,149.95,2024-01-27,West,106
+69,Running Shoes,Apparel,9,119.99,1079.91,2024-03-01,South,102
+70,Backpack,Apparel,6,54.99,329.94,2024-01-12,South,105
+71,Wireless Headphones,Electronics,1,89.99,89.99,2024-02-01,West,102
+72,Backpack,Apparel,4,54.99,219.96,2024-03-30,West,108
+73,Protein Powder,Food,1,49.99,49.99,2024-01-14,West,104
+74,Water Bottle,Sports,8,19.99,159.92,2024-01-07,International,104
+75,Bluetooth Speaker,Electronics,8,59.99,479.92,2024-03-26,International,106
+76,Backpack,Apparel,9,54.99,494.91,2024-02-24,International,108
+77,Notebook Set,Office,8,14.99,119.92,2024-02-03,South,105
+78,Sunglasses,Apparel,4,44.99,179.96,2024-02-05,West,102
+79,Coffee Maker,Home,6,79.99,479.94,2024-03-10,North,103
+80,Bluetooth Speaker,Electronics,4,59.99,239.96,2024-01-09,West,107
+81,Wireless Headphones,Electronics,4,89.99,359.96,2024-02-23,West,101
+82,Desk Lamp,Home,8,39.99,319.92,2024-01-01,East,105
+83,Monitor Stand,Office,7,34.99,244.93,2024-03-09,International,104
+84,Notebook Set,Office,1,14.99,14.99,2024-02-19,East,107
+85,Mechanical Keyboard,Electronics,3,129.99,389.97,2024-03-20,International,101
+86,Sunglasses,Apparel,1,44.99,44.99,2024-01-11,West,103
+87,Yoga Mat,Sports,7,29.99,209.93,2024-02-11,South,108
+88,Desk Lamp,Home,5,39.99,199.95,2024-02-23,East,102
+89,Wireless Headphones,Electronics,6,89.99,539.94,2024-01-29,North,101
+90,Running Shoes,Apparel,1,119.99,119.99,2024-03-20,South,104
+91,Backpack,Apparel,4,54.99,219.96,2024-02-29,East,106
+92,Protein Powder,Food,2,49.99,99.98,2024-01-21,East,102
+93,Backpack,Apparel,7,54.99,384.93,2024-02-20,South,102
+94,Running Shoes,Apparel,2,119.99,239.98,2024-03-30,East,102
+95,Wireless Headphones,Electronics,6,89.99,539.94,2024-03-09,West,106
+96,Wireless Headphones,Electronics,7,89.99,629.93,2024-03-03,North,107
+97,Monitor Stand,Office,8,34.99,279.92,2024-03-31,South,107
+98,Sunglasses,Apparel,5,44.99,224.95,2024-03-19,International,108
+99,Backpack,Apparel,5,54.99,274.95,2024-02-11,South,102
+100,Green Tea Pack,Food,8,12.99,103.92,2024-03-13,International,107
+101,Coffee Maker,Home,3,79.99,239.97,2024-03-03,South,106
+102,Mechanical Keyboard,Electronics,10,129.99,1299.9,2024-03-30,East,101
+103,Running Shoes,Apparel,7,119.99,839.93,2024-03-03,International,104
+104,Notebook Set,Office,8,14.99,119.92,2024-01-03,North,105
+105,Yoga Mat,Sports,10,29.99,299.9,2024-02-17,West,106
+106,Coffee Maker,Home,6,79.99,479.94,2024-03-30,West,105
+107,Protein Powder,Food,4,49.99,199.96,2024-02-10,North,103
+108,Yoga Mat,Sports,10,29.99,299.9,2024-03-08,International,105
+109,,Sports,4,29.99,119.96,2024-02-16,South,105
+110,Yoga Mat,Sports,1,29.99,29.99,2024-01-07,International,105
+111,Monitor Stand,Office,8,34.99,279.92,2024-01-14,North,105
+112,Bluetooth Speaker,Electronics,1,59.99,59.99,2024-02-02,West,102
+113,USB-C Hub,Electronics,10,34.99,349.9,2024-03-21,North,103
+114,Yoga Mat,Sports,2,29.99,59.98,2024-02-01,North,107
+115,Running Shoes,Apparel,9,119.99,1079.91,2024-02-18,West,108
+116,Desk Lamp,Home,5,39.99,199.95,2024-03-13,International,101
+117,Green Tea Pack,Food,4,12.99,51.96,2024-03-21,South,105
+118,Bluetooth Speaker,Electronics,9,59.99,539.91,2024-01-10,South,101
+119,Notebook Set,Office,5,14.99,74.95,2024-01-05,South,105
+120,Notebook Set,Office,2,14.99,29.98,2024-03-28,South,105
+121,Sunglasses,Apparel,4,44.99,179.96,2024-02-24,North,104
+122,Monitor Stand,Office,3,34.99,104.97,2024-01-10,North,103
+123,Monitor Stand,Office,10,34.99,349.9,2024-02-06,West,102
+124,Desk Lamp,Home,5,39.99,199.95,2024-03-05,International,108
+125,,Electronics,7,129.99,909.93,2024-02-11,International,105
+126,Sunglasses,Apparel,10,44.99,449.9,2024-03-16,North,105
+127,Bluetooth Speaker,Electronics,8,59.99,479.92,2024-03-07,West,105
+128,Sunglasses,Apparel,8,44.99,359.92,2024-01-12,West,106
+129,USB-C Hub,Electronics,3,34.99,104.97,2024-02-12,West,108
+130,Monitor Stand,Office,9,34.99,314.91,2024-01-05,West,102
+131,Green Tea Pack,Food,7,12.99,90.93,2024-03-06,North,108
+132,Coffee Maker,Home,10,79.99,799.9,2024-03-04,West,101
+133,,Electronics,5,129.99,649.95,2024-02-26,West,102
+134,Green Tea Pack,Food,4,12.99,51.96,2024-03-31,South,105
+135,USB-C Hub,Electronics,4,34.99,139.96,2024-01-15,West,102
+136,Mechanical Keyboard,Electronics,5,129.99,649.95,2024-03-06,East,107
+137,Running Shoes,Apparel,8,119.99,959.92,2024-03-11,South,107
+138,Protein Powder,Food,3,49.99,149.97,2024-01-09,East,107
+139,Yoga Mat,Sports,1,29.99,29.99,2024-02-06,East,108
+140,Notebook Set,Office,6,14.99,89.94,2024-02-12,International,107
+141,Running Shoes,Apparel,4,119.99,479.96,2024-03-14,West,104
+142,Coffee Maker,Home,8,79.99,639.92,2024-03-31,West,107
+143,Sunglasses,Apparel,3,44.99,134.97,2024-03-04,North,103
+144,,Office,2,34.99,69.98,2024-02-26,North,108
+145,Monitor Stand,Office,3,34.99,104.97,2024-01-10,West,105
+146,Sunglasses,Apparel,2,44.99,89.98,2024-02-12,International,107
+147,Mechanical Keyboard,Electronics,8,129.99,1039.92,2024-03-10,North,102
+148,Yoga Mat,Sports,4,29.99,119.96,2024-01-12,West,102
+149,USB-C Hub,Electronics,8,34.99,279.92,2024-01-22,East,101
+150,Yoga Mat,Sports,6,29.99,179.94,2024-02-17,West,103
+151,Sunglasses,Apparel,3,44.99,134.97,2024-01-22,South,102
+152,Sunglasses,Apparel,4,44.99,179.96,2024-03-04,International,103
+153,Notebook Set,Office,5,14.99,74.95,2024-03-26,North,108
+154,Bluetooth Speaker,Electronics,2,59.99,119.98,2024-02-26,East,105
+155,Yoga Mat,Sports,8,29.99,239.92,2024-02-08,South,107
+156,Desk Lamp,Home,10,39.99,399.9,2024-02-15,International,105
+157,Monitor Stand,Office,7,34.99,244.93,2024-02-05,North,101
+158,Monitor Stand,Office,5,34.99,174.95,2024-01-30,International,106
+159,Yoga Mat,Sports,3,29.99,89.97,2024-03-21,North,101
+160,Backpack,Apparel,6,54.99,329.94,2024-01-17,North,105
+161,Running Shoes,Apparel,3,119.99,359.97,2024-03-10,East,105
+162,Monitor Stand,Office,8,34.99,279.92,2024-02-07,East,102
+163,Green Tea Pack,Food,4,12.99,51.96,2024-03-27,West,106
+164,Yoga Mat,Sports,9,29.99,269.91,2024-01-16,West,106
+165,Backpack,Apparel,7,54.99,384.93,2024-03-22,East,102
+166,Backpack,Apparel,9,54.99,494.91,2024-02-11,International,104
+167,Notebook Set,Office,5,14.99,74.95,2024-03-24,West,102
+168,Yoga Mat,Sports,8,29.99,239.92,2024-01-15,North,104
+169,Notebook Set,Office,6,14.99,89.94,2024-03-26,International,107
+170,Mechanical Keyboard,Electronics,7,129.99,909.93,2024-03-24,North,108
+171,Yoga Mat,Sports,1,29.99,29.99,2024-03-29,East,104
+172,Monitor Stand,Office,6,34.99,209.94,2024-01-13,East,106
+173,USB-C Hub,Electronics,8,34.99,279.92,2024-01-12,South,101
+174,Bluetooth Speaker,Electronics,10,59.99,599.9,2024-01-27,North,104
+175,Running Shoes,Apparel,6,119.99,719.94,2024-01-19,International,101
+176,Bluetooth Speaker,Electronics,9,59.99,539.91,2024-02-02,South,102
+177,,Electronics,6,89.99,539.94,2024-01-31,International,106
+178,Bluetooth Speaker,Electronics,7,59.99,419.93,2024-03-08,North,102
+179,Water Bottle,Sports,10,19.99,199.9,2024-01-14,West,104
+180,Green Tea Pack,Food,9,12.99,116.91,2024-02-08,West,101
+181,Desk Lamp,Home,7,39.99,279.93,2024-03-28,North,108
+182,Mechanical Keyboard,Electronics,2,129.99,259.98,2024-02-11,International,103
+183,Sunglasses,Apparel,10,44.99,449.9,2024-03-11,East,107
+184,Notebook Set,Office,9,14.99,134.91,2024-03-18,West,102
+185,Sunglasses,Apparel,9,44.99,404.91,2024-01-28,West,108
+186,Monitor Stand,Office,8,34.99,279.92,2024-02-21,West,102
+187,Yoga Mat,Sports,6,29.99,179.94,2024-01-20,West,102
+188,Desk Lamp,Home,2,39.99,79.98,2024-02-17,South,101
+189,Coffee Maker,Home,2,79.99,159.98,2024-02-22,East,107
+190,Yoga Mat,Sports,10,29.99,299.9,2024-02-09,East,102
+191,Sunglasses,Apparel,8,44.99,359.92,2024-01-29,North,106
+192,Green Tea Pack,Food,5,12.99,64.95,2024-03-14,South,107
+193,Monitor Stand,Office,10,34.99,349.9,2024-03-19,International,101
+194,Protein Powder,Food,5,49.99,249.95,2024-01-04,South,105
+195,Coffee Maker,Home,6,79.99,479.94,2024-01-01,South,103
+196,Bluetooth Speaker,Electronics,1,59.99,59.99,2024-01-12,International,104
+197,Bluetooth Speaker,Electronics,6,59.99,359.94,2024-02-09,East,102
+198,Green Tea Pack,Food,10,12.99,129.9,2024-01-07,North,105
+199,Backpack,Apparel,8,54.99,439.92,2024-02-23,East,104
+200,Desk Lamp,Home,2,39.99,79.98,2024-02-06,International,108
+201,Running Shoes,Apparel,7,119.99,839.93,2024-03-17,North,101
+202,Green Tea Pack,Food,3,12.99,38.97,2024-02-02,East,106
+203,Desk Lamp,Home,3,39.99,119.97,2024-01-17,West,104
+204,Green Tea Pack,Food,6,12.99,77.94,2024-01-10,West,101
+205,USB-C Hub,Electronics,6,34.99,209.94,2024-03-14,West,107
+206,USB-C Hub,Electronics,7,34.99,244.93,2024-01-03,East,103
+207,Monitor Stand,Office,6,34.99,209.94,2024-01-12,West,102
+208,Water Bottle,Sports,2,19.99,39.98,2024-02-20,East,106
+209,USB-C Hub,Electronics,9,34.99,314.91,2024-03-22,North,104
+210,Protein Powder,Food,3,49.99,149.97,2024-01-31,North,103
+211,Bluetooth Speaker,Electronics,2,59.99,119.98,2024-01-23,West,108
+212,Notebook Set,Office,10,14.99,149.9,2024-03-23,International,106
+213,Bluetooth Speaker,Electronics,8,59.99,479.92,2024-01-09,West,108
+214,Backpack,Apparel,1,54.99,54.99,2024-02-15,International,102
+215,Wireless Headphones,Electronics,6,89.99,539.94,2024-02-06,North,102
+216,Notebook Set,Office,10,14.99,149.9,2024-03-11,North,108
+217,Running Shoes,Apparel,6,119.99,719.94,2024-03-18,West,103
+218,Green Tea Pack,Food,6,12.99,77.94,2024-01-11,International,103
+219,Notebook Set,Office,9,14.99,134.91,2024-03-07,International,103
+220,Desk Lamp,Home,7,39.99,279.93,2024-02-13,International,101
+221,USB-C Hub,Electronics,6,34.99,209.94,2024-01-13,International,107
+222,Sunglasses,Apparel,10,44.99,449.9,2024-01-20,East,102
+223,Coffee Maker,Home,5,79.99,399.95,2024-03-24,West,103
+224,Yoga Mat,Sports,9,29.99,269.91,2024-02-18,East,103
+225,,Food,9,49.99,449.91,2024-01-12,West,106
+226,Running Shoes,Apparel,6,119.99,719.94,2024-03-03,South,104
+227,Yoga Mat,Sports,2,29.99,59.98,2024-03-05,International,101
+228,Backpack,Apparel,3,54.99,164.97,2024-03-17,West,103
+229,Green Tea Pack,Food,10,12.99,129.9,2024-01-22,West,101
+230,Running Shoes,Apparel,8,119.99,959.92,2024-03-19,East,108
+231,Green Tea Pack,Food,8,12.99,103.92,2024-01-25,East,108
+232,Desk Lamp,Home,9,39.99,359.91,2024-03-08,West,103
+233,Bluetooth Speaker,Electronics,5,59.99,299.95,2024-01-07,West,106
+234,Monitor Stand,Office,9,34.99,314.91,2024-01-16,East,102
+235,Mechanical Keyboard,Electronics,9,129.99,1169.91,2024-01-19,West,102
+236,Notebook Set,Office,6,14.99,89.94,2024-01-04,West,101
+237,Desk Lamp,Home,2,39.99,79.98,2024-02-17,South,101
+238,Protein Powder,Food,6,49.99,299.94,2024-01-19,South,101
+239,Protein Powder,Food,3,49.99,149.97,2024-03-31,West,108
+240,Wireless Headphones,Electronics,5,89.99,449.95,2024-01-28,South,107
+241,Yoga Mat,Sports,2,29.99,59.98,2024-01-07,South,107
+242,USB-C Hub,Electronics,2,34.99,69.98,2024-03-04,International,101
+243,Protein Powder,Food,3,49.99,149.97,2024-02-07,West,101
+244,Desk Lamp,Home,3,39.99,119.97,2024-03-26,North,106
+245,Water Bottle,Sports,9,19.99,179.91,2024-03-11,North,107
+246,Desk Lamp,Home,6,39.99,239.94,2024-02-02,North,106
+247,Protein Powder,Food,2,49.99,99.98,2024-03-15,East,103
+248,Monitor Stand,Office,3,34.99,104.97,2024-03-28,West,108
+249,USB-C Hub,Electronics,8,34.99,279.92,2024-01-05,East,104
+250,Wireless Headphones,Electronics,6,89.99,539.94,2024-02-09,International,107
+251,Yoga Mat,Sports,1,29.99,29.99,2024-03-23,South,105
+252,Monitor Stand,Office,6,34.99,209.94,2024-02-04,North,106
+253,Notebook Set,Office,7,14.99,104.93,2024-02-13,South,108
+254,Green Tea Pack,Food,9,12.99,116.91,2024-02-04,North,107
+255,Monitor Stand,Office,3,34.99,104.97,2024-03-10,East,106
+256,Yoga Mat,Sports,5,29.99,149.95,2024-02-27,International,107
+257,Notebook Set,Office,1,14.99,14.99,2024-02-15,International,107
+258,Wireless Headphones,Electronics,2,89.99,179.98,2024-03-26,West,106
+259,Bluetooth Speaker,Electronics,1,59.99,59.99,2024-01-19,International,108
+260,Green Tea Pack,Food,6,12.99,77.94,2024-02-16,West,101
+261,Coffee Maker,Home,6,79.99,479.94,2024-02-26,North,103
+262,Sunglasses,Apparel,5,44.99,224.95,2024-02-01,North,101
+263,Desk Lamp,Home,9,39.99,359.91,2024-01-16,East,105
+264,Backpack,Apparel,5,54.99,274.95,2024-03-29,West,104
+265,Notebook Set,Office,3,14.99,44.97,2024-02-26,North,106
+266,Water Bottle,Sports,9,19.99,179.91,2024-02-07,East,103
+267,Sunglasses,Apparel,3,44.99,134.97,2024-02-16,International,104
+268,Bluetooth Speaker,Electronics,4,59.99,239.96,2024-03-04,North,106
+269,Green Tea Pack,Food,9,12.99,116.91,2024-01-17,International,102
+270,Protein Powder,Food,8,49.99,399.92,2024-03-08,West,107
+271,Coffee Maker,Home,2,79.99,159.98,2024-02-27,West,106
+272,Water Bottle,Sports,10,19.99,199.9,2024-01-24,South,107
+273,Monitor Stand,Office,2,34.99,69.98,2024-03-07,South,105
+274,Protein Powder,Food,4,49.99,199.96,2024-02-14,International,105
+275,Sunglasses,Apparel,9,44.99,404.91,2024-02-05,South,105
+276,Sunglasses,Apparel,3,44.99,134.97,2024-03-16,International,103
+277,Mechanical Keyboard,Electronics,10,129.99,1299.9,2024-02-13,International,101
+278,Wireless Headphones,Electronics,10,89.99,899.9,2024-02-03,South,107
+279,Mechanical Keyboard,Electronics,9,129.99,1169.91,2024-02-07,East,108
+280,Desk Lamp,Home,5,39.99,199.95,2024-02-28,North,101
+281,Notebook Set,Office,4,14.99,59.96,2024-02-13,International,103
+282,Protein Powder,Food,6,49.99,299.94,2024-02-21,South,106
+283,Running Shoes,Apparel,8,119.99,959.92,2024-01-16,East,108
+284,Yoga Mat,Sports,7,29.99,209.93,2024-03-19,West,104
+285,Monitor Stand,Office,6,34.99,209.94,2024-03-14,East,104
+286,,Sports,8,19.99,159.92,2024-03-04,East,108
+287,Water Bottle,Sports,8,19.99,159.92,2024-01-31,South,106
+288,Backpack,Apparel,8,54.99,439.92,2024-02-06,International,101
+289,Mechanical Keyboard,Electronics,5,129.99,649.95,2024-02-16,West,106
+290,Water Bottle,Sports,4,19.99,79.96,2024-02-16,International,105
+291,Green Tea Pack,Food,9,12.99,116.91,2024-02-05,International,102
+292,Coffee Maker,Home,6,79.99,479.94,2024-03-12,East,103
+293,Water Bottle,Sports,1,19.99,19.99,2024-01-06,North,103
+294,Water Bottle,Sports,8,19.99,159.92,2024-01-20,International,103
+295,Bluetooth Speaker,Electronics,7,59.99,419.93,2024-03-19,East,106
+296,Notebook Set,Office,10,14.99,149.9,2024-02-08,West,101
+297,Desk Lamp,Home,10,39.99,399.9,2024-02-09,North,108
+298,Green Tea Pack,Food,10,12.99,129.9,2024-03-14,South,101
+299,Sunglasses,Apparel,10,44.99,449.9,2024-02-18,South,104
+300,USB-C Hub,Electronics,4,34.99,139.96,2024-01-03,West,106
+301,Running Shoes,Apparel,7,119.99,839.93,2024-03-05,International,108
+302,Wireless Headphones,Electronics,3,89.99,269.97,2024-03-07,South,106
+303,Desk Lamp,Home,6,39.99,239.94,2024-01-23,West,106
+304,Monitor Stand,Office,5,34.99,174.95,2024-03-19,West,104
+305,Yoga Mat,Sports,4,29.99,119.96,2024-02-08,East,104
+306,Notebook Set,Office,6,14.99,89.94,2024-03-12,East,105
+307,Desk Lamp,Home,7,39.99,279.93,2024-02-14,South,105
+308,USB-C Hub,Electronics,6,34.99,209.94,2024-02-26,East,108
+309,Yoga Mat,Sports,9,29.99,269.91,2024-03-30,East,103
+310,Running Shoes,Apparel,4,119.99,479.96,2024-01-07,International,104
+311,,Home,6,39.99,239.94,2024-03-01,North,103
+312,Mechanical Keyboard,Electronics,3,129.99,389.97,2024-02-22,West,108
+313,Yoga Mat,Sports,6,29.99,179.94,2024-02-06,North,102
+314,Protein Powder,Food,1,49.99,49.99,2024-01-23,West,103
+315,Monitor Stand,Office,7,34.99,244.93,03/15/2024,South,105
+316,Backpack,Apparel,10,54.99,549.9,2024-01-14,East,105
+317,Water Bottle,Sports,8,19.99,159.92,2024-01-18,International,108
+318,,Home,3,79.99,239.97,2024-02-28,East,103
+319,Yoga Mat,Sports,10,29.99,299.9,2024-03-27,South,103
+320,Desk Lamp,Home,7,39.99,279.93,2024-03-06,East,102
+321,Bluetooth Speaker,Electronics,8,59.99,479.92,2024-02-11,South,101
+322,Green Tea Pack,Food,5,12.99,64.95,2024-02-12,East,101
+323,Running Shoes,Apparel,1,119.99,119.99,2024-03-26,North,108
+324,Water Bottle,Sports,5,19.99,99.95,2024-03-29,North,105
+325,Bluetooth Speaker,Electronics,8,59.99,479.92,2024-01-20,West,106
+326,Notebook Set,Office,9,14.99,134.91,2024-03-26,South,104
+327,Green Tea Pack,Food,2,12.99,25.98,2024-03-08,West,106
+328,Wireless Headphones,Electronics,9,89.99,809.91,2024-03-05,South,103
+329,Notebook Set,Office,2,14.99,29.98,2024-03-28,South,108
+330,Green Tea Pack,Food,1,12.99,12.99,2024-02-28,South,107
+331,Notebook Set,Office,5,14.99,74.95,2024-01-03,West,105
+332,Backpack,Apparel,2,54.99,109.98,2024-01-06,West,106
+333,Wireless Headphones,Electronics,2,89.99,179.98,2024-03-01,North,105
+334,Green Tea Pack,Food,7,12.99,90.93,2024-02-17,West,108
+335,Desk Lamp,Home,2,39.99,79.98,2024-03-28,International,103
+336,Bluetooth Speaker,Electronics,9,59.99,539.91,2024-02-20,International,103
+337,Wireless Headphones,Electronics,1,89.99,89.99,2024-02-08,West,107
+338,Running Shoes,Apparel,8,119.99,959.92,2024-02-14,South,105
+339,Green Tea Pack,Food,2,12.99,25.98,2024-01-05,West,101
+340,Backpack,Apparel,1,54.99,54.99,2024-02-27,International,101
+341,Notebook Set,Office,4,14.99,59.96,2024-03-10,South,101
+342,Running Shoes,Apparel,10,119.99,1199.9,2024-02-10,International,106
+343,Sunglasses,Apparel,9,44.99,404.91,2024-01-29,West,105
+344,Backpack,Apparel,3,54.99,164.97,2024-03-21,West,108
+345,Sunglasses,Apparel,7,44.99,314.93,2024-03-08,East,107
+346,Bluetooth Speaker,Electronics,9,59.99,539.91,2024-03-01,South,104
+347,Green Tea Pack,Food,8,12.99,103.92,2024-01-08,International,107
+348,Bluetooth Speaker,Electronics,7,59.99,419.93,2024-02-01,East,104
+349,Notebook Set,Office,6,14.99,89.94,2024-01-12,International,104
+350,Backpack,Apparel,10,54.99,549.9,2024-01-06,North,104
+351,Sunglasses,Apparel,9,44.99,404.91,2024-01-28,West,104
+352,Mechanical Keyboard,Electronics,1,129.99,129.99,2024-01-28,South,102
+353,Mechanical Keyboard,Electronics,4,129.99,519.96,2024-03-30,International,104
+354,Coffee Maker,Home,5,79.99,399.95,2024-02-18,West,106
+355,Mechanical Keyboard,Electronics,8,129.99,1039.92,2024-02-29,North,108
+356,Running Shoes,Apparel,6,119.99,719.94,2024-02-10,West,101
+357,Bluetooth Speaker,Electronics,1,59.99,59.99,2024-02-03,International,107
+358,Running Shoes,Apparel,7,119.99,839.93,2024-03-13,South,108
+359,Coffee Maker,Home,5,79.99,399.95,2024-03-03,West,108
+360,Bluetooth Speaker,Electronics,3,59.99,179.97,2024-03-10,West,103
+361,Sunglasses,Apparel,1,44.99,44.99,2024-03-08,North,102
+362,Green Tea Pack,Food,1,12.99,12.99,2024-02-22,South,104
+363,Running Shoes,Apparel,9,119.99,1079.91,2024-02-28,East,101
+364,,Apparel,8,54.99,439.92,2024-03-25,West,101
+365,,Electronics,1,89.99,89.99,2024-03-08,East,105
+366,Sunglasses,Apparel,7,44.99,314.93,2024-01-23,North,102
+367,Backpack,Apparel,9,54.99,494.91,2024-02-02,East,105
+368,Desk Lamp,Home,8,39.99,319.92,2024-03-13,South,104
+369,USB-C Hub,Electronics,1,34.99,34.99,2024-01-12,West,107
+370,Sunglasses,Apparel,1,44.99,44.99,2024-03-30,South,102
+371,Green Tea Pack,Food,6,12.99,77.94,2024-03-13,North,101
+372,Protein Powder,Food,10,49.99,499.9,2024-03-01,East,101
+373,Yoga Mat,Sports,9,29.99,269.91,2024-03-13,North,103
+374,Running Shoes,Apparel,10,119.99,1199.9,2024-01-19,West,102
+375,Backpack,Apparel,7,54.99,384.93,2024-03-27,International,106
+376,Green Tea Pack,Food,2,12.99,25.98,2024-03-05,East,101
+377,USB-C Hub,Electronics,6,34.99,209.94,2024-03-18,International,107
+378,Sunglasses,Apparel,5,44.99,224.95,2024-02-27,West,104
+379,Desk Lamp,Home,3,39.99,119.97,2024-03-28,International,107
+380,Green Tea Pack,Food,4,12.99,51.96,2024-01-10,North,105
+381,Sunglasses,Apparel,3,44.99,134.97,03/15/2024,East,106
+382,Yoga Mat,Sports,8,29.99,239.92,2024-02-16,East,102
+383,Notebook Set,Office,9,14.99,134.91,2024-03-12,International,107
+384,Water Bottle,Sports,2,19.99,39.98,03/15/2024,International,106
+385,Desk Lamp,Home,7,39.99,279.93,2024-01-11,International,104
+386,Desk Lamp,Home,3,39.99,119.97,2024-01-18,East,105
+387,Bluetooth Speaker,Electronics,7,59.99,419.93,2024-02-05,West,105
+388,Yoga Mat,Sports,4,29.99,119.96,2024-03-21,West,104
+389,Wireless Headphones,Electronics,7,89.99,629.93,2024-02-12,International,107
+390,Coffee Maker,Home,7,79.99,559.93,2024-03-24,International,103
+391,Protein Powder,Food,4,49.99,199.96,2024-03-02,East,103
+392,Yoga Mat,Sports,8,29.99,239.92,2024-03-14,South,106
+393,Desk Lamp,Home,6,39.99,239.94,2024-01-15,International,104
+394,Sunglasses,Apparel,9,44.99,404.91,2024-01-04,West,104
+395,Protein Powder,Food,2,49.99,99.98,2024-02-22,West,103
+396,Sunglasses,Apparel,3,44.99,134.97,2024-02-24,West,102
+397,Backpack,Apparel,7,54.99,384.93,2024-03-09,International,107
+398,Coffee Maker,Home,9,79.99,719.91,2024-03-17,North,102
+399,Coffee Maker,Home,3,79.99,239.97,2024-03-23,International,101
+400,,Apparel,7,44.99,314.93,2024-02-12,West,102
+401,Water Bottle,Sports,9,19.99,179.91,2024-03-12,International,104
+402,Green Tea Pack,Food,10,12.99,129.9,2024-03-29,International,103
+403,USB-C Hub,Electronics,5,34.99,174.95,2024-02-23,North,102
+404,Coffee Maker,Home,5,79.99,399.95,2024-02-13,West,104
+405,USB-C Hub,Electronics,8,34.99,279.92,2024-03-30,West,106
+406,Protein Powder,Food,2,49.99,99.98,2024-01-03,East,102
+407,Protein Powder,Food,4,49.99,199.96,2024-03-07,South,103
+408,Notebook Set,Office,4,14.99,59.96,2024-02-21,South,103
+409,Wireless Headphones,Electronics,10,89.99,899.9,2024-01-26,West,107
+410,Running Shoes,Apparel,5,119.99,599.95,2024-03-31,North,102
+411,Coffee Maker,Home,6,79.99,479.94,2024-01-26,West,102
+412,Water Bottle,Sports,6,19.99,119.94,2024-03-17,West,107
+413,Monitor Stand,Office,8,34.99,279.92,2024-03-20,South,105
+414,Sunglasses,Apparel,3,44.99,134.97,2024-02-10,North,104
+415,Protein Powder,Food,3,49.99,149.97,2024-03-06,West,107
+416,Desk Lamp,Home,3,39.99,119.97,2024-03-03,International,103
+417,Bluetooth Speaker,Electronics,3,59.99,179.97,2024-02-10,West,101
+418,Notebook Set,Office,3,14.99,44.97,2024-01-25,West,108
+419,Protein Powder,Food,8,49.99,399.92,2024-03-03,South,102
+420,Running Shoes,Apparel,5,119.99,599.95,2024-01-05,East,104
+421,Notebook Set,Office,10,14.99,149.9,2024-03-04,International,102
+422,Water Bottle,Sports,6,19.99,119.94,2024-03-10,North,108
+423,USB-C Hub,Electronics,4,34.99,139.96,2024-02-08,North,108
+424,USB-C Hub,Electronics,8,34.99,279.92,2024-01-16,South,104
+425,Coffee Maker,Home,10,79.99,799.9,2024-03-21,West,103
+426,Monitor Stand,Office,4,34.99,139.96,2024-01-08,International,106
+427,Bluetooth Speaker,Electronics,6,59.99,359.94,2024-03-31,East,105
+428,Water Bottle,Sports,2,19.99,39.98,2024-01-18,West,101
+429,Bluetooth Speaker,Electronics,3,59.99,179.97,2024-02-01,South,106
+430,Sunglasses,Apparel,7,44.99,314.93,2024-03-03,South,105
+431,USB-C Hub,Electronics,2,34.99,69.98,2024-02-21,International,105
+432,Notebook Set,Office,8,14.99,119.92,2024-02-11,International,101
+433,USB-C Hub,Electronics,8,34.99,279.92,2024-03-22,East,102
+434,Desk Lamp,Home,4,39.99,159.96,2024-03-04,East,106
+435,Backpack,Apparel,3,54.99,164.97,2024-03-13,West,106
+436,Wireless Headphones,Electronics,2,89.99,179.98,2024-03-21,West,101
+437,Notebook Set,Office,8,14.99,119.92,2024-01-01,West,104
+438,Mechanical Keyboard,Electronics,5,129.99,649.95,2024-01-21,East,102
+439,Coffee Maker,Home,3,79.99,239.97,2024-01-07,West,105
+440,Desk Lamp,Home,2,39.99,79.98,2024-03-31,North,101
+441,,Apparel,4,54.99,219.96,2024-03-07,West,101
+442,USB-C Hub,Electronics,7,34.99,244.93,2024-03-29,South,108
+443,Protein Powder,Food,2,49.99,99.98,2024-01-14,East,106
+444,Green Tea Pack,Food,3,12.99,38.97,03/15/2024,South,102
+445,Sunglasses,Apparel,3,44.99,134.97,2024-02-26,East,104
+446,Desk Lamp,Home,10,39.99,399.9,2024-03-28,West,104
+447,Green Tea Pack,Food,2,12.99,25.98,2024-03-16,West,106
+448,Bluetooth Speaker,Electronics,4,59.99,239.96,2024-02-05,North,104
+449,Backpack,Apparel,5,54.99,274.95,2024-03-29,North,105
+450,Running Shoes,Apparel,7,119.99,839.93,2024-02-07,North,104
+451,Notebook Set,Office,10,14.99,149.9,2024-01-10,International,101
+452,Bluetooth Speaker,Electronics,7,59.99,419.93,2024-03-13,West,106
+453,,Office,2,14.99,29.98,2024-01-03,International,102
+454,Mechanical Keyboard,Electronics,1,129.99,129.99,2024-02-20,International,105
+455,Desk Lamp,Home,7,39.99,279.93,2024-03-30,West,102
+456,Bluetooth Speaker,Electronics,5,59.99,299.95,2024-01-11,East,102
+457,Green Tea Pack,Food,3,12.99,38.97,2024-03-09,East,107
+458,Sunglasses,Apparel,2,44.99,89.98,2024-02-09,West,104
+459,Desk Lamp,Home,2,39.99,79.98,2024-02-28,International,101
+460,Protein Powder,Food,3,49.99,149.97,2024-01-16,North,103
+461,Coffee Maker,Home,9,79.99,719.91,2024-03-07,East,103
+462,Monitor Stand,Office,5,34.99,174.95,2024-01-16,North,106
+463,USB-C Hub,Electronics,5,34.99,174.95,2024-03-14,North,108
+464,Notebook Set,Office,10,14.99,149.9,2024-01-22,East,103
+465,Backpack,Apparel,2,54.99,109.98,2024-01-30,International,101
+466,Running Shoes,Apparel,1,119.99,119.99,2024-03-01,East,107
+467,Monitor Stand,Office,1,34.99,34.99,2024-03-11,West,104
+468,Protein Powder,Food,6,49.99,299.94,2024-02-04,North,106
+469,Wireless Headphones,Electronics,3,89.99,269.97,2024-01-29,International,101
+470,Notebook Set,Office,5,14.99,74.95,03/15/2024,East,102
+471,Running Shoes,Apparel,5,119.99,599.95,2024-03-13,East,104
+472,,Office,4,14.99,59.96,2024-03-10,South,103
+473,,Apparel,9,119.99,1079.91,2024-02-14,North,106
+474,Monitor Stand,Office,5,34.99,174.95,2024-01-14,South,104
+475,Bluetooth Speaker,Electronics,5,59.99,299.95,2024-01-12,North,104
+476,Protein Powder,Food,6,49.99,299.94,2024-02-28,North,102
+477,Desk Lamp,Home,2,39.99,79.98,2024-03-16,International,101
+478,Running Shoes,Apparel,5,119.99,599.95,2024-02-03,East,107
+479,Coffee Maker,Home,8,79.99,639.92,2024-02-04,South,102
+480,Green Tea Pack,Food,10,12.99,129.9,2024-01-14,South,102
+481,Desk Lamp,Home,2,39.99,79.98,2024-03-09,East,104
+482,Monitor Stand,Office,2,34.99,69.98,2024-01-12,South,105
+483,Wireless Headphones,Electronics,4,89.99,359.96,2024-02-11,South,102
+484,Desk Lamp,Home,9,39.99,359.91,2024-01-07,East,105
+485,Desk Lamp,Home,8,39.99,319.92,2024-03-12,International,104
+486,Green Tea Pack,Food,3,12.99,38.97,2024-01-16,North,101
+487,Bluetooth Speaker,Electronics,4,59.99,239.96,2024-02-21,East,102
+488,Monitor Stand,Office,2,34.99,69.98,2024-01-03,North,104
+489,Bluetooth Speaker,Electronics,2,59.99,119.98,2024-02-12,North,101
+490,,Electronics,10,129.99,1299.9,2024-02-25,West,108
+491,Bluetooth Speaker,Electronics,6,59.99,359.94,2024-01-28,South,105
+492,Wireless Headphones,Electronics,10,89.99,899.9,2024-03-20,International,104
+493,Mechanical Keyboard,Electronics,9,129.99,1169.91,2024-03-02,North,102
+494,Running Shoes,Apparel,9,119.99,1079.91,2024-02-01,International,101
+495,Coffee Maker,Home,8,79.99,639.92,2024-03-10,West,106
+496,Desk Lamp,Home,5,39.99,199.95,2024-01-24,North,106
+497,Green Tea Pack,Food,5,12.99,64.95,2024-01-08,West,106
+498,Bluetooth Speaker,Electronics,2,59.99,119.98,2024-02-01,South,105
+499,Protein Powder,Food,1,49.99,49.99,2024-01-29,International,107
+500,Monitor Stand,Office,3,34.99,104.97,2024-01-23,South,106

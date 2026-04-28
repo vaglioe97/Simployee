@@ -19,7 +19,7 @@ from supabase import Client, create_client
 
 load_dotenv()
 
-DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "datasets")
 
 DATASETS = [
     {
