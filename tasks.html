@@ -836,6 +836,138 @@
     .result-table tr:last-child td { border-bottom: none; }
     .result-table tbody tr:hover td { background: rgba(255,255,255,0.025); color: var(--text); }
 
+    /* ── Task Chat ─────────────────────────────────────────────────────────── */
+    .tc-messages {
+      padding: 1rem 1.75rem;
+      min-height: 80px;
+      max-height: 300px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-top: 1px solid var(--border-card);
+      scroll-behavior: smooth;
+    }
+
+    .tc-messages::-webkit-scrollbar { width: 4px; }
+    .tc-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+
+    .tc-empty { font-size: 0.82rem; color: #475569; text-align: center; padding: 1.25rem 0; }
+
+    .tc-bubble-row { display: flex; align-items: flex-end; gap: 0.55rem; }
+    .tc-bubble-row.tc-user-row { flex-direction: row-reverse; }
+
+    .tc-avatar {
+      width: 26px; height: 26px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 800; color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .tc-bubble {
+      max-width: 78%;
+      font-size: 0.875rem;
+      line-height: 1.65;
+      padding: 0.6rem 0.9rem;
+      border-radius: 12px;
+      word-break: break-word;
+      animation: fadeUp 0.2s ease;
+    }
+
+    .tc-sophie-bubble {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-bottom-left-radius: 3px;
+      color: var(--text);
+    }
+
+    .tc-user-bubble {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(79,70,229,0.15));
+      border: 1px solid var(--border);
+      border-bottom-right-radius: 3px;
+      color: var(--text);
+    }
+
+    .tc-typing-bubble { display: flex; align-items: center; gap: 4px; padding: 0.6rem 0.9rem; }
+
+    .tc-dot {
+      width: 5px; height: 5px;
+      background: #475569;
+      border-radius: 50%;
+      animation: tcBounce 1.2s infinite;
+    }
+
+    .tc-dot:nth-child(2) { animation-delay: 0.2s; }
+    .tc-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes tcBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30%            { transform: translateY(-4px); opacity: 1; }
+    }
+
+    .tc-input-area { border-top: 1px solid var(--border-card); padding: 0.85rem 1.75rem; }
+
+    .tc-file-row {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.78rem; color: var(--text-muted);
+      background: var(--bg-card-2); border: 1px solid var(--border-card);
+      border-radius: 7px; padding: 0.3rem 0.7rem; margin-bottom: 0.5rem;
+    }
+
+    .tc-file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .tc-remove-file {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-muted); font-size: 1rem; line-height: 1;
+      padding: 0 0.1rem; transition: color 0.2s;
+    }
+
+    .tc-remove-file:hover { color: #F87171; }
+
+    .tc-input-row { display: flex; align-items: flex-end; gap: 0.5rem; }
+
+    .tc-attach-label {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 8px; border: 1px solid var(--border-card);
+      background: var(--bg-card-2); cursor: pointer;
+      color: var(--text-muted); flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .tc-attach-label:hover { border-color: var(--border); background: var(--accent-dim); }
+
+    textarea.tc-textarea {
+      flex: 1;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.83rem; color: var(--text);
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-card); border-radius: 10px;
+      padding: 0.55rem 0.85rem; resize: none;
+      min-height: 34px; max-height: 120px; outline: none;
+      line-height: 1.55; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea.tc-textarea::placeholder { color: #475569; }
+    textarea.tc-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+    textarea.tc-textarea:disabled { opacity: 0.5; }
+
+    .tc-send-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none; border-radius: 8px; cursor: pointer;
+      color: #fff; flex-shrink: 0;
+      transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+    }
+
+    .tc-send-btn:hover  { box-shadow: 0 0 14px var(--accent-glow); transform: translateY(-1px); }
+    .tc-send-btn:active { transform: translateY(0); }
+    .tc-send-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
     /* ── Responsive ────────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
       .nav-links { display: none; }
@@ -1007,7 +1139,7 @@
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     function statusChip(status) {
-      const map = { pending: '🔵 Pending', submitted: '🟡 Submitted', reviewed: '✅ Reviewed' };
+      const map = { pending: '🔵 Pending', reviewed: '💬 Active' };
       return `<span class="status-chip ${status}">${map[status] || status}</span>`;
     }
 
@@ -1052,72 +1184,8 @@
 
     // ── Render task detail ────────────────────────────────────────────────────
     function renderDetail() {
-      const task    = tasks[selectedIdx];
-      const detail  = document.getElementById('task-detail');
-
-      let bodyHtml = '';
-
-      if (task.status === 'pending') {
-        bodyHtml = `
-          <div class="submission-section">
-            <div>
-              <p class="detail-label">Your submission</p>
-              <textarea class="submission-input" id="sub-text"
-                placeholder="Paste your SQL query, Python script, or explain what you did…"></textarea>
-            </div>
-            <div>
-              <p class="detail-label">Attach a file</p>
-              <div class="file-upload-area" id="file-drop">
-                <input type="file" id="file-input"
-                  accept=".xlsx,.xls,.csv,.py,.sql,.txt" />
-                <div class="file-upload-label">
-                  <span class="file-upload-icon">📁</span>
-                  <span class="file-upload-text">Click to upload or drag & drop</span>
-                  <span class="file-upload-types">.xlsx · .csv · .py · .sql · .txt</span>
-                </div>
-              </div>
-              <div class="file-selected-row" id="file-selected-row">
-                <span>📎</span>
-                <span class="file-selected-name" id="file-selected-name"></span>
-                <button class="btn-remove-file" id="btn-remove-file" title="Remove file">×</button>
-              </div>
-            </div>
-            <p class="error-msg" id="sub-error"></p>
-            <button class="btn-primary" id="btn-submit" style="align-self:flex-start">
-              <span id="sub-spinner" class="spinner" hidden></span>
-              Submit
-            </button>
-          </div>
-        `;
-      } else if (task.status === 'submitted') {
-        bodyHtml = `
-          <div>
-            <p class="detail-label">Your submission</p>
-            <div class="submission-display">${escHtml(task.submission || '')}</div>
-          </div>
-          <div class="waiting-banner">
-            <div class="spinner" style="border-color:rgba(251,191,36,0.3); border-top-color:var(--yellow)"></div>
-            Sophie Chen is reviewing your work…
-          </div>
-        `;
-      } else if (task.status === 'reviewed') {
-        bodyHtml = `
-          <div>
-            <p class="detail-label">Your submission</p>
-            <div class="submission-display">${escHtml(task.submission || '')}</div>
-          </div>
-          <div>
-            <div class="feedback-header">
-              ✦ Feedback from Sophie Chen
-            </div>
-            <div class="feedback-box">${escHtml(task.feedback || '')}</div>
-          </div>
-          <button class="btn-secondary" id="btn-resubmit" style="align-self:flex-start">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            Resubmit Task
-          </button>
-        `;
-      }
+      const task   = tasks[selectedIdx];
+      const detail = document.getElementById('task-detail');
 
       detail.innerHTML = `
         <div class="task-detail-header">
@@ -1133,59 +1201,122 @@
             <p class="detail-label">Deliverable</p>
             <div class="deliverable-box">${escHtml(task.deliverable)}</div>
           </div>
-          ${bodyHtml}
+        </div>
+        <div class="tc-messages" id="tc-messages">
+          <div id="tc-msg-list"></div>
+          <div class="tc-bubble-row tc-sophie-row" id="tc-typing" hidden>
+            <div class="tc-avatar">SC</div>
+            <div class="tc-bubble tc-sophie-bubble tc-typing-bubble">
+              <span class="tc-dot"></span><span class="tc-dot"></span><span class="tc-dot"></span>
+            </div>
+          </div>
+        </div>
+        <div class="tc-input-area">
+          <div class="tc-file-row" id="tc-file-row" hidden>
+            <span>📎</span>
+            <span class="tc-file-name" id="tc-file-name"></span>
+            <button class="tc-remove-file" id="tc-remove-file">×</button>
+          </div>
+          <div class="tc-input-row">
+            <label class="tc-attach-label" title="Attach file">
+              <input type="file" id="tc-file-input" accept=".xlsx,.xls,.csv,.py,.sql,.txt" style="display:none" />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            </label>
+            <textarea class="tc-textarea" id="tc-textarea" rows="1"
+              placeholder="Send your work, code, or a question…"></textarea>
+            <button class="tc-send-btn" id="tc-send-btn">
+              <span class="spinner" id="tc-spinner" hidden></span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/></svg>
+            </button>
+          </div>
+          <p class="error-msg" id="tc-error"></p>
         </div>
       `;
 
-      // Bind events after render
-      if (task.status === 'pending') {
-        bindSubmitForm(task);
-      } else if (task.status === 'reviewed') {
-        document.getElementById('btn-resubmit').addEventListener('click', () => resubmitTask(task.id));
-      }
+      selectedFile = null;
+      loadMessages(task.id);
+      bindChatForm(task.id);
 
-      // Check if all tasks reviewed
       const allDone = tasks.every(t => t.status === 'reviewed');
-      const banner  = document.getElementById('advance-banner');
-      banner.hidden = !allDone;
-      if (allDone) {
-        document.getElementById('next-week-label').textContent = currentWeek + 1;
-      }
+      document.getElementById('advance-banner').hidden = !allDone;
+      if (allDone) document.getElementById('next-week-label').textContent = currentWeek + 1;
     }
 
-    // ── File upload binding ───────────────────────────────────────────────────
-    function bindSubmitForm(task) {
-      const fileInput   = document.getElementById('file-input');
-      const fileDrop    = document.getElementById('file-drop');
-      const selectedRow = document.getElementById('file-selected-row');
-      const selectedName = document.getElementById('file-selected-name');
+    // ── Chat helpers ──────────────────────────────────────────────────────────
+    function scrollChat() {
+      const w = document.getElementById('tc-messages');
+      if (w) w.scrollTop = w.scrollHeight;
+    }
 
-      function setFile(file) {
-        if (!file) return;
-        selectedFile = file;
-        selectedName.textContent = file.name;
-        selectedRow.classList.add('visible');
-        fileDrop.style.display = 'none';
+    async function loadMessages(taskId) {
+      try {
+        const res = await fetch(`${API_BASE}/tasks/${taskId}/messages`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (res.status === 401) { logout(); return; }
+        if (!res.ok) return;
+        const msgs = await res.json();
+        if (tasks[selectedIdx]?.id !== taskId) return;
+        const list = document.getElementById('tc-msg-list');
+        if (!list) return;
+        if (!msgs.length) {
+          list.innerHTML = '<p class="tc-empty">No messages yet — send your work or a question to get feedback from Sophie.</p>';
+          return;
+        }
+        list.innerHTML = '';
+        msgs.forEach(m => appendMessageBubble(m.role, m.content));
+      } catch { /* stay empty */ }
+    }
+
+    function appendMessageBubble(role, content) {
+      const list   = document.getElementById('tc-msg-list');
+      const typing = document.getElementById('tc-typing');
+      if (!list) return;
+      const row = document.createElement('div');
+      if (role === 'assistant') {
+        row.className = 'tc-bubble-row tc-sophie-row';
+        row.innerHTML = `<div class="tc-avatar">SC</div><div class="tc-bubble tc-sophie-bubble">${escHtml(content)}</div>`;
+      } else {
+        row.className = 'tc-bubble-row tc-user-row';
+        row.innerHTML = `<div class="tc-bubble tc-user-bubble">${escHtml(content)}</div>`;
       }
+      list.parentElement.insertBefore(row, typing);
+      scrollChat();
+    }
 
-      fileInput.addEventListener('change', e => setFile(e.target.files[0]));
+    function bindChatForm(taskId) {
+      const textarea   = document.getElementById('tc-textarea');
+      const fileInput  = document.getElementById('tc-file-input');
+      const fileRow    = document.getElementById('tc-file-row');
+      const fileNameEl = document.getElementById('tc-file-name');
 
-      fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('dragover'); });
-      fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('dragover'));
-      fileDrop.addEventListener('drop', e => {
-        e.preventDefault();
-        fileDrop.classList.remove('dragover');
-        setFile(e.dataTransfer.files[0]);
+      textarea.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
       });
 
-      document.getElementById('btn-remove-file').addEventListener('click', () => {
+      textarea.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessageToSophie(taskId);
+        }
+      });
+
+      fileInput.addEventListener('change', e => {
+        const f = e.target.files[0];
+        if (!f) return;
+        selectedFile = f;
+        fileNameEl.textContent = f.name;
+        fileRow.hidden = false;
+      });
+
+      document.getElementById('tc-remove-file').addEventListener('click', () => {
         selectedFile = null;
         fileInput.value = '';
-        selectedRow.classList.remove('visible');
-        fileDrop.style.display = '';
+        fileRow.hidden = true;
       });
 
-      document.getElementById('btn-submit').addEventListener('click', () => submitTask(task.id));
+      document.getElementById('tc-send-btn').addEventListener('click', () => sendMessageToSophie(taskId));
     }
 
     // ── Render full tasks view ────────────────────────────────────────────────
@@ -1340,33 +1471,6 @@
       return await res.json();
     }
 
-    // ── API: submit task ──────────────────────────────────────────────────────
-    async function submitTaskAPI(taskId, text, file) {
-      const formData = new FormData();
-      formData.append('submission_text', text);
-      if (file) formData.append('file', file);
-
-      const res = await fetch(`${API_BASE}/tasks/${taskId}/submit`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData,
-      });
-      if (res.status === 401) { logout(); return null; }
-      if (!res.ok) throw new Error('Failed to submit. Try again.');
-      return await res.json();
-    }
-
-    // ── API: resubmit task ────────────────────────────────────────────────────
-    async function resubmitTaskAPI(taskId) {
-      const res = await fetch(`${API_BASE}/tasks/${taskId}/resubmit`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-      });
-      if (res.status === 401) { logout(); return null; }
-      if (!res.ok) throw new Error('Failed to resubmit. Try again.');
-      return await res.json();
-    }
-
     // ── API: advance week ─────────────────────────────────────────────────────
     async function advanceWeekAPI() {
       const res = await fetch(`${API_BASE}/users/me/advance`, {
@@ -1378,44 +1482,73 @@
       return await res.json();
     }
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
-    async function submitTask(taskId) {
-      clearError('sub-error');
-      const text = document.getElementById('sub-text').value.trim();
+    // ── Send message to Sophie ────────────────────────────────────────────────
+    async function sendMessageToSophie(taskId) {
+      const textarea = document.getElementById('tc-textarea');
+      const sendBtn  = document.getElementById('tc-send-btn');
+      const spinner  = document.getElementById('tc-spinner');
+      const text     = textarea.value.trim();
+
+      clearError('tc-error');
 
       if (!text && !selectedFile) {
-        showError('sub-error', 'Please submit something — text, code, or a file.');
+        showError('tc-error', 'Send something — text, code, or a file.');
         return;
       }
 
-      const btn     = document.getElementById('btn-submit');
-      const spinner = document.getElementById('sub-spinner');
-      setLoading(btn, spinner, true);
+      // Optimistic: render user bubble immediately
+      const displayText = selectedFile
+        ? (text ? `${text}\n[File: ${selectedFile.name}]` : `[File: ${selectedFile.name}]`)
+        : text;
+      appendMessageBubble('user', displayText);
+
+      textarea.value = '';
+      textarea.style.height = 'auto';
+      const fileToSend = selectedFile;
+      selectedFile = null;
+      document.getElementById('tc-file-row').hidden = true;
+      document.getElementById('tc-file-input').value = '';
+
+      sendBtn.disabled = true;
+      spinner.hidden   = false;
+      document.getElementById('tc-typing').hidden = false;
+      scrollChat();
 
       try {
-        const updated = await submitTaskAPI(taskId, text, selectedFile);
-        // Update local state and re-render
-        const idx    = tasks.findIndex(t => t.id === taskId);
-        tasks[idx]   = updated;
-        selectedFile = null;
-        renderSelector();
-        renderDetail();
-      } catch (err) {
-        showError('sub-error', err.message);
-        setLoading(btn, spinner, false);
-      }
-    }
+        const formData = new FormData();
+        formData.append('message', text);
+        if (fileToSend) formData.append('file', fileToSend);
 
-    async function resubmitTask(taskId) {
-      try {
-        const updated = await resubmitTaskAPI(taskId);
-        const idx     = tasks.findIndex(t => t.id === taskId);
-        tasks[idx]    = updated;
-        selectedFile  = null;
-        renderSelector();
-        renderDetail();
+        const res = await fetch(`${API_BASE}/tasks/${taskId}/message`, {
+          method:  'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body:    formData,
+        });
+
+        if (res.status === 401) { logout(); return; }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Failed to get a response.');
+
+        document.getElementById('tc-typing').hidden = true;
+        appendMessageBubble('assistant', data.content);
+
+        // Update local status if first exchange
+        const idx = tasks.findIndex(t => t.id === taskId);
+        if (idx !== -1 && tasks[idx].status === 'pending') {
+          tasks[idx].status = 'reviewed';
+          renderSelector();
+        }
+
+        const allDone = tasks.every(t => t.status === 'reviewed');
+        document.getElementById('advance-banner').hidden = !allDone;
+        if (allDone) document.getElementById('next-week-label').textContent = currentWeek + 1;
+
       } catch (err) {
-        alert(err.message);
+        document.getElementById('tc-typing').hidden = true;
+        showError('tc-error', err.message);
+      } finally {
+        sendBtn.disabled = false;
+        spinner.hidden   = true;
       }
     }
 

@@ -250,6 +250,61 @@ Format:
 
     return json.loads(raw)
 
+# ── AI: Sophie chat (chat-based feedback per task) ───────────────────────────
+def _sophie_chat_response(
+    task: dict,
+    job_path: dict,
+    history: list[dict],
+    new_user_message: str,
+    file_content: Optional[str] = None,
+    file_name: Optional[str] = None,
+) -> str:
+    system = f"""You are Sophie Chen, {job_path['manager_title']} at {job_path['company']}.
+You are in an ongoing conversation with your junior analyst about this task:
+
+Task: {task['title']}
+Description: {task['description']}
+Expected deliverable: {task['deliverable']}
+
+Guidelines:
+- Write exactly like a real manager messaging on Slack — direct, warm, human. No corporate speak.
+- NEVER start with "Great job!" or "Excellent work!" or any generic praise opener.
+- On the first message: give specific feedback on what they submitted. Be honest.
+- On follow-up messages: continue naturally, answer questions, give guidance.
+- If the work is fundamentally correct, be positive and give ONE concrete improvement tip only.
+- If there's a real problem, call out ONE main issue — the most important one. Don't list every flaw.
+- For SQL tasks: the user works against novaretail_sales_q1_2024.csv. The deliverable is the SQL query itself — results shown from running it on the CSV with pandas or SQLite are a bonus.
+- NEVER suggest using Notion, Jira, Confluence, Trello, Asana, GitHub Issues, Linear, monday.com, or any external tracking system. If they need to document something, tell them to include it in their message or a plain text file.
+- NEVER reference external tools that don't exist in the simulation: no Slack channels, shared Google Docs, or external links.
+- Keep it 100-200 words.
+- Sound like a real person, not an AI. No bullet point lists.
+- End with a follow-up question or next step."""
+
+    messages = []
+    for m in history:
+        role    = m.get("role")
+        content = m.get("content", "")
+        if role in ("user", "assistant") and content:
+            messages.append({"role": role, "content": content})
+
+    if file_content and new_user_message.strip():
+        user_content = f"{new_user_message}\n\n[File: {file_name}]\n{file_content[:3000]}"
+    elif file_content:
+        user_content = f"[File: {file_name}]\n{file_content[:3000]}"
+    else:
+        user_content = new_user_message
+
+    messages.append({"role": "user", "content": user_content})
+
+    response = _ai.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=400,
+        system=system,
+        messages=messages,
+    )
+    return response.content[0].text.strip()
+
+
 # ── AI: evaluate submission (mirrors core/ai_engine.py) ───────────────────────
 def _evaluate_submission(
     task: dict,
@@ -541,71 +596,73 @@ def generate_tasks(current_user: dict = Depends(get_current_user)):
     return result.data
 
 
-@app.post("/tasks/{task_id}/submit")
-async def submit_task(
-    task_id:         int,
-    submission_text: str              = Form(""),
-    file:            Optional[UploadFile] = File(None),
-    current_user:    dict             = Depends(get_current_user),
+@app.get("/tasks/{task_id}/messages")
+def get_task_messages(task_id: int, current_user: dict = Depends(get_current_user)):
+    get_task_owned_by(task_id, current_user["id"])
+    result = (
+        _supabase.table("task_messages")
+        .select("id, task_id, role, content, created_at")
+        .eq("task_id", task_id)
+        .order("created_at")
+        .execute()
+    )
+    return result.data or []
+
+
+@app.post("/tasks/{task_id}/message", status_code=status.HTTP_201_CREATED)
+async def send_task_message(
+    task_id:      int,
+    message:      str                  = Form(""),
+    file:         Optional[UploadFile] = File(None),
+    current_user: dict                 = Depends(get_current_user),
 ):
     task = get_task_owned_by(task_id, current_user["id"])
 
-    if task["status"] == "reviewed":
-        raise HTTPException(status_code=400, detail="Task already reviewed. Use resubmit instead.")
+    if not message.strip() and not file:
+        raise HTTPException(status_code=400, detail="Send something — text, code, or a file.")
 
-    if not submission_text.strip() and not file:
-        raise HTTPException(status_code=400, detail="Submit something — text, code, or a file.")
-
-    # Read file content
     file_content: Optional[str] = None
     file_name:    Optional[str] = None
     if file and file.filename:
         file_content = await read_uploaded_file(file)
         file_name    = file.filename
 
-    # Build the submission record stored in DB
-    if file_name and submission_text.strip():
-        submission_record = f"[File: {file_name}]\n\n{submission_text}"
+    if file_name and message.strip():
+        user_content_db = f"[File: {file_name}]\n\n{message}"
     elif file_name:
-        submission_record = f"[File submitted: {file_name}]"
+        user_content_db = f"[File: {file_name}]"
     else:
-        submission_record = submission_text
+        user_content_db = message
+
+    history_res = (
+        _supabase.table("task_messages")
+        .select("role, content")
+        .eq("task_id", task_id)
+        .order("created_at")
+        .execute()
+    )
+    history = history_res.data or []
 
     progress = get_or_create_progress(current_user["id"])
     job_path = JOB_PATHS.get(progress["job_path_id"], {})
 
     try:
-        feedback = _evaluate_submission(
-            task, submission_text, job_path,
+        sophie_reply = _sophie_chat_response(
+            task, job_path, history, message,
             file_content=file_content, file_name=file_name,
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI feedback failed: {e}")
+        raise HTTPException(status_code=500, detail=f"AI response failed: {e}")
 
-    result = (
-        _supabase.table("tasks")
-        .update({
-            "submission": submission_record,
-            "feedback":   feedback,
-            "status":     "reviewed",
-        })
-        .eq("id", task_id)
-        .execute()
-    )
-    return result.data[0]
+    _supabase.table("task_messages").insert([
+        {"task_id": task_id, "role": "user",      "content": user_content_db},
+        {"task_id": task_id, "role": "assistant",  "content": sophie_reply},
+    ]).execute()
 
+    if task["status"] == "pending":
+        _supabase.table("tasks").update({"status": "reviewed"}).eq("id", task_id).execute()
 
-@app.post("/tasks/{task_id}/resubmit")
-def resubmit_task(task_id: int, current_user: dict = Depends(get_current_user)):
-    get_task_owned_by(task_id, current_user["id"])  # ownership check
-
-    result = (
-        _supabase.table("tasks")
-        .update({"status": "pending", "submission": None, "feedback": None})
-        .eq("id", task_id)
-        .execute()
-    )
-    return result.data[0]
+    return {"role": "assistant", "content": sophie_reply}
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Dataset routes
