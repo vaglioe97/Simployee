@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simployee — Interview</title>
+  <script>if (!localStorage.getItem('token')) window.location.replace('login.html');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+
+    :root {
+      --bg:          #0F172A;
+      --bg-card:     #1E293B;
+      --bg-card-2:   #162032;
+      --accent:      #6366F1;
+      --accent-dark: #4F46E5;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --accent-dim:  rgba(99, 102, 241, 0.12);
+      --text:        #F8FAFC;
+      --text-muted:  #94A3B8;
+      --border:      rgba(99, 102, 241, 0.18);
+      --border-card: rgba(255, 255, 255, 0.06);
+      --green:       #34D399;
+      --green-dim:   rgba(52, 211, 153, 0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Cursor glow ──────────────────────────────────────────────────────── */
+    #cursor-glow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, rgba(99,102,241,0.11) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 9999;
+      border-radius: 50%;
+      will-change: transform;
+    }
+
+    /* ── Navbar ───────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .nav-logo {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-logo span {
+      background: linear-gradient(135deg, #818CF8, #6366F1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .nav-avatar {
+      width: 30px; height: 30px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .btn-logout {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: 1px solid var(--border-card);
+      border-radius: 7px;
+      padding: 0.35rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s;
+    }
+
+    .btn-logout:hover { color: var(--text); border-color: var(--border); background: var(--accent-dim); }
+
+    /* ── Page layout ──────────────────────────────────────────────────────── */
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 88px 1.5rem 4rem;
+    }
+
+    /* ── Interview header ─────────────────────────────────────────────────── */
+    .interview-header {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .interview-title-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .sophie-avatar-large {
+      width: 48px; height: 48px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .interview-title-info h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+
+    .interview-title-info p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .step {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border-card);
+      background: var(--bg-card-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #475569;
+      flex-shrink: 0;
+      transition: border-color 0.3s, background 0.3s, color 0.3s;
+    }
+
+    .step.step-active {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: #818CF8;
+    }
+
+    .step.step-done {
+      border-color: var(--green);
+      background: var(--green-dim);
+      color: var(--green);
+    }
+
+    .step-line {
+      width: 32px;
+      height: 2px;
+      background: var(--border-card);
+      transition: background 0.3s;
+    }
+
+    .step-line.done { background: var(--green); }
+
+    #progress-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* ── Chat window ──────────────────────────────────────────────────────── */
+    .chat-window {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      padding: 1.5rem;
+      min-height: 320px;
+      max-height: 440px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .chat-window::-webkit-scrollbar { width: 4px; }
+    .chat-window::-webkit-scrollbar-track { background: transparent; }
+    .chat-window::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+
+    /* ── Bubbles ──────────────────────────────────────────────────────────── */
+    .bubble-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.65rem;
+    }
+
+    .bubble-row.user-row { flex-direction: row-reverse; }
+
+    .bubble-avatar {
+      width: 30px; height: 30px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #818CF8;
+      flex-shrink: 0;
+    }
+
+    .bubble {
+      max-width: 78%;
+      font-size: 0.875rem;
+      line-height: 1.65;
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .sophie-bubble {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-bottom-left-radius: 4px;
+      color: var(--text);
+    }
+
+    .user-bubble {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(79,70,229,0.15));
+      border: 1px solid var(--border);
+      border-bottom-right-radius: 4px;
+      color: var(--text);
+    }
+
+    /* ── Typing indicator ─────────────────────────────────────────────────── */
+    .typing-bubble {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0.75rem 1rem;
+    }
+
+    .typing-dot {
+      width: 6px; height: 6px;
+      background: #475569;
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30%            { transform: translateY(-5px); opacity: 1; }
+    }
+
+    /* ── Input area ───────────────────────────────────────────────────────── */
+    .input-area {
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-end;
+    }
+
+    textarea#msg-input {
+      flex: 1;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      resize: none;
+      min-height: 48px;
+      max-height: 120px;
+      outline: none;
+      line-height: 1.55;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea#msg-input::placeholder { color: #475569; }
+
+    textarea#msg-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+
+    textarea#msg-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-send {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 12px;
+      padding: 0 1.25rem;
+      height: 48px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-send:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-send:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Join area ────────────────────────────────────────────────────────── */
+    .join-area {
+      display: flex;
+      justify-content: center;
+      padding-top: 0.5rem;
+    }
+
+    .btn-join {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 12px;
+      padding: 0.85rem 2.25rem;
+      cursor: pointer;
+      transition: box-shadow 0.25s, transform 0.2s, opacity 0.2s;
+    }
+
+    .btn-join:hover {
+      box-shadow: 0 0 32px var(--accent-glow), 0 4px 20px rgba(0,0,0,0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-join:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Spinner ──────────────────────────────────────────────────────────── */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 500px) {
+      .bubble { max-width: 88%; }
+      .btn-join { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cursor-glow"></div>
+
+  <!-- ── Navbar ──────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="#" class="nav-logo">💼 <span>Simployee</span></a>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">—</div>
+        <span id="nav-username">—</span>
+      </div>
+      <button class="btn-logout" id="btn-logout">Log Out</button>
+    </div>
+  </nav>
+
+  <!-- ── Main ────────────────────────────────────────────────────────────── -->
+  <main class="page">
+
+    <!-- Interview header -->
+    <div class="interview-header">
+      <div class="interview-title-row">
+        <div class="sophie-avatar-large">SC</div>
+        <div class="interview-title-info">
+          <h1>Interview with Sophie Chen</h1>
+          <p>Junior Data Analyst · NovaRetail Inc.</p>
+        </div>
+      </div>
+
+      <div class="progress-row">
+        <div class="progress-steps">
+          <div class="step" id="step-1">1</div>
+          <div class="step-line" id="line-1"></div>
+          <div class="step" id="step-2">2</div>
+          <div class="step-line" id="line-2"></div>
+          <div class="step" id="step-3">3</div>
+        </div>
+        <p id="progress-label">Starting…</p>
+      </div>
+    </div>
+
+    <!-- Chat window -->
+    <div class="chat-window" id="chat-window">
+      <div id="chat-messages"></div>
+      <div id="typing-indicator" class="bubble-row sophie-row" hidden>
+        <div class="bubble-avatar">SC</div>
+        <div class="bubble sophie-bubble typing-bubble">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="input-area" id="input-area" hidden>
+      <textarea id="msg-input" rows="1"
+        placeholder="Type your answer… (Enter to send, Shift+Enter for new line)"></textarea>
+      <button class="btn-send" id="btn-send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2 11 13"/><path d="M22 2 15 22 11 13 2 9l20-7z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Join area (shown after final feedback) -->
+    <div class="join-area" id="join-area" hidden>
+      <button class="btn-join" id="btn-join">
+        🎉 Join the team
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE   = 'https://simployee-production.up.railway.app';
+    const token      = localStorage.getItem('token');
+    const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const jobPathId  = new URLSearchParams(window.location.search).get('path') || 'junior_data_analyst';
+
+    let history      = [];
+    let questionStep = 0;
+
+    // ── Cursor glow ───────────────────────────────────────────────────────────
+    const glow = document.getElementById('cursor-glow');
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let glowX  = mouseX, glowY = mouseY;
+    document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+    (function tick() {
+      glowX += (mouseX - glowX) * 0.07;
+      glowY += (mouseY - glowY) * 0.07;
+      glow.style.transform = `translate(${glowX - 240}px, ${glowY - 240}px)`;
+      requestAnimationFrame(tick);
+    })();
+
+    // ── Navbar ────────────────────────────────────────────────────────────────
+    if (cachedUser.full_name) {
+      const initials = cachedUser.full_name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+      document.getElementById('nav-avatar').textContent   = initials;
+      document.getElementById('nav-username').textContent = cachedUser.username || '';
+    }
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.replace('login.html');
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/\n/g, '<br>');
+    }
+
+    function scrollDown() {
+      const w = document.getElementById('chat-window');
+      w.scrollTop = w.scrollHeight;
+    }
+
+    // ── Bubble rendering ──────────────────────────────────────────────────────
+    function appendBubble(role, text) {
+      const msgs = document.getElementById('chat-messages');
+      const row  = document.createElement('div');
+
+      if (role === 'assistant') {
+        row.className = 'bubble-row sophie-row';
+        row.innerHTML = `
+          <div class="bubble-avatar">SC</div>
+          <div class="bubble sophie-bubble">${escHtml(text)}</div>
+        `;
+      } else {
+        row.className = 'bubble-row user-row';
+        row.innerHTML = `<div class="bubble user-bubble">${escHtml(text)}</div>`;
+      }
+
+      // Insert before the typing indicator
+      const typing = document.getElementById('typing-indicator');
+      msgs.parentElement.insertBefore(row, typing);
+      scrollDown();
+    }
+
+    // ── Typing indicator ──────────────────────────────────────────────────────
+    function showTyping() {
+      document.getElementById('typing-indicator').hidden = false;
+      scrollDown();
+    }
+
+    function hideTyping() {
+      document.getElementById('typing-indicator').hidden = true;
+    }
+
+    // ── Progress steps ────────────────────────────────────────────────────────
+    function updateProgress(step) {
+      for (let i = 1; i <= 3; i++) {
+        const el   = document.getElementById(`step-${i}`);
+        const line = document.getElementById(`line-${i}`);
+        if (step === 'done' || i < step) {
+          el.className = 'step step-done';
+          if (line) line.classList.add('done');
+        } else if (i === step) {
+          el.className = 'step step-active';
+        } else {
+          el.className = 'step';
+        }
+      }
+      const label = document.getElementById('progress-label');
+      label.textContent = step === 'done' ? 'Interview complete' : `Question ${step} of 3`;
+    }
+
+    // ── Input / join visibility ───────────────────────────────────────────────
+    function showInput() {
+      document.getElementById('input-area').hidden = false;
+      document.getElementById('join-area').hidden  = true;
+      const input = document.getElementById('msg-input');
+      input.disabled = false;
+      document.getElementById('btn-send').disabled = false;
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function showJoin() {
+      document.getElementById('input-area').hidden = true;
+      document.getElementById('join-area').hidden  = false;
+    }
+
+    function disableInput() {
+      document.getElementById('msg-input').disabled  = true;
+      document.getElementById('btn-send').disabled   = true;
+    }
+
+    // ── API call ──────────────────────────────────────────────────────────────
+    async function sendToAPI(userText = null) {
+      if (userText !== null) {
+        appendBubble('user', userText);
+        history.push({ role: 'user', content: userText });
+      }
+
+      disableInput();
+      showTyping();
+
+      try {
+        const res = await fetch(`${API_BASE}/interview/message`, {
+          method:  'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type':  'application/json',
+          },
+          body: JSON.stringify({ job_path_id: jobPathId, history }),
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.replace('login.html');
+          return;
+        }
+
+        if (!res.ok) throw new Error('API error');
+
+        const data = await res.json();
+        hideTyping();
+
+        history.push({ role: 'assistant', content: data.message });
+        appendBubble('assistant', data.message);
+
+        if (data.is_final) {
+          updateProgress('done');
+          showJoin();
+        } else {
+          questionStep++;
+          updateProgress(questionStep);
+          showInput();
+        }
+      } catch {
+        hideTyping();
+        appendBubble('assistant', "Something went wrong on my end. Try sending your answer again.");
+        showInput();
+      }
+    }
+
+    // ── Send handler ──────────────────────────────────────────────────────────
+    function handleSend() {
+      const input = document.getElementById('msg-input');
+      const text  = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      input.style.height = 'auto';
+      sendToAPI(text);
+    }
+
+    document.getElementById('btn-send').addEventListener('click', handleSend);
+
+    document.getElementById('msg-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    });
+
+    document.getElementById('msg-input').addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // ── Join the team ─────────────────────────────────────────────────────────
+    document.getElementById('btn-join').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-join');
+      btn.disabled   = true;
+      btn.innerHTML  = '<span class="spinner"></span> Joining the team…';
+
+      try {
+        const res = await fetch(`${API_BASE}/users/me/progress`, {
+          method:  'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type':  'application/json',
+          },
+          body: JSON.stringify({ job_path_id: jobPathId }),
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem('token');
+          window.location.replace('login.html');
+          return;
+        }
+
+        if (res.status === 201 || res.status === 409) {
+          window.location.replace('dashboard.html');
+          return;
+        }
+
+        throw new Error('Unexpected response');
+      } catch {
+        btn.disabled  = false;
+        btn.innerHTML = '🎉 Join the team <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      }
+    });
+
+    // ── Init: get Sophie's opening message ────────────────────────────────────
+    sendToAPI(null);
+  </script>
+
+</body>
+</html>

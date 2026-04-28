@@ -335,6 +335,10 @@ class LoginRequest(BaseModel):
 class SelectJobPathRequest(BaseModel):
     job_path_id: str
 
+class InterviewMessageRequest(BaseModel):
+    job_path_id: str
+    history: list[dict]
+
 # ── Shared response shape ─────────────────────────────────────────────────────
 def _user_payload(user: dict) -> dict:
     return {"id": user["id"], "username": user["username"], "full_name": user["full_name"]}
@@ -583,6 +587,60 @@ def resubmit_task(task_id: int, current_user: dict = Depends(get_current_user)):
         .execute()
     )
     return result.data[0]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Dataset routes
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Interview routes
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/interview/message")
+def interview_message(
+    body: InterviewMessageRequest,
+    current_user: dict = Depends(get_current_user),
+):
+    if body.job_path_id not in JOB_PATHS:
+        raise HTTPException(status_code=400, detail="Invalid job path.")
+
+    job_path = JOB_PATHS[body.job_path_id]
+    user_message_count = sum(1 for m in body.history if m.get("role") == "user")
+    is_final = user_message_count >= 3
+
+    system = f"""You are Sophie Chen, {job_path['manager_title']} at {job_path['company']}.
+You are doing a quick screening interview for a {job_path['title']} position.
+
+Follow this structure strictly:
+- Turn 1 (no user messages yet): Introduce yourself warmly, say you're excited about the role, then ask what drew them to data analysis and why they're applying.
+- Turn 2 (after 1 user answer): Ask a beginner-friendly practical question about their experience with {job_path['stack'][0]} or working with data in general.
+- Turn 3 (after 2 user answers): Ask how they handle receiving feedback on their work or a time they had to learn something new quickly.
+- Turn 4 (after 3 user answers): Give warm, honest final feedback. Reference 1-2 specific things they said. Highlight 2 genuine strengths and 1 area to grow. Close with: "Welcome to the team — can't wait to get started with you!"
+
+Style rules:
+- Write like a real person messaging on Slack — casual, warm, human. No corporate language.
+- No bullet points, no numbered questions, no headers.
+- Keep each message under 120 words."""
+
+    messages = [{"role": "user", "content": "Ready."}]
+    for m in body.history:
+        role = m.get("role")
+        content = m.get("content", "")
+        if role in ("user", "assistant") and content:
+            messages.append({"role": role, "content": content})
+
+    response = _ai.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=300,
+        system=system,
+        messages=messages,
+    )
+
+    return {
+        "message": response.content[0].text.strip(),
+        "is_final": is_final,
+    }
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Dataset routes
