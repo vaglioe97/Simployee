@@ -278,6 +278,7 @@ Guidelines:
 - NEVER reference external tools that don't exist in the simulation: no Slack channels, shared Google Docs, or external links.
 - Keep it 100-200 words.
 - Sound like a real person, not an AI. No bullet point lists.
+- Once you have told the user their work is complete or said something equivalent to task done, do NOT assign new tasks or ask them to extend the work further. The user will move on to the next task themselves. Your role is to evaluate what was submitted, not to create new assignments.
 - End with a follow-up question or next step."""
 
     messages = []
