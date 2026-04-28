@@ -595,6 +595,73 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* ── Datasets section ─────────────────────────────────────────────────── */
+    .datasets-section { margin-bottom: 2rem; }
+
+    .datasets-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .dataset-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: var(--bg-card-2);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .dataset-card:hover { border-color: var(--border); }
+
+    .dataset-info { flex: 1; min-width: 0; }
+
+    .dataset-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .dataset-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.4rem 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-download:hover {
+      background: rgba(99,102,241,0.22);
+      box-shadow: 0 0 14px var(--accent-glow);
+    }
+
     /* ── Responsive ────────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
       .nav-links { display: none; }
@@ -637,6 +704,12 @@
         </h1>
         <p class="page-subtitle" id="page-subtitle"></p>
       </div>
+    </div>
+
+    <!-- Available Datasets -->
+    <div class="datasets-section" id="datasets-section" hidden>
+      <p class="datasets-label">Available Datasets</p>
+      <div id="datasets-list"></div>
     </div>
 
     <!-- State: loading -->
@@ -929,6 +1002,31 @@
         .replace(/\n/g, '<br>');
     }
 
+    // ── API: load datasets ────────────────────────────────────────────────────
+    async function loadDatasets() {
+      try {
+        const res = await fetch(`${API_BASE}/datasets`);
+        if (!res.ok) return;
+        const datasets = await res.json();
+        if (!datasets.length) return;
+        const list = document.getElementById('datasets-list');
+        list.innerHTML = datasets.map(d => `
+          <div class="dataset-card">
+            <div class="dataset-info">
+              <p class="dataset-name">📊 ${escHtml(d.name)}</p>
+              <p class="dataset-desc">${escHtml(d.description)}</p>
+            </div>
+            <a class="btn-download" href="${d.download_url}" download>
+              ↓ Download
+            </a>
+          </div>
+        `).join('');
+        document.getElementById('datasets-section').hidden = false;
+      } catch {
+        // silently skip if endpoint unavailable
+      }
+    }
+
     // ── API: load user progress ───────────────────────────────────────────────
     async function loadProgress() {
       const res = await fetch(`${API_BASE}/users/me/progress`, {
@@ -1086,6 +1184,7 @@
     // ── Init ──────────────────────────────────────────────────────────────────
     async function init() {
       showState('loading');
+      loadDatasets();
 
       try {
         await loadProgress();

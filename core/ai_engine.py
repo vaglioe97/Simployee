@@ -31,6 +31,7 @@ Rules:
 - Week 1-4: Basic tasks (data cleaning, simple queries, basic reports)
 - Week 5-12: Intermediate tasks (analysis, visualization, Python scripts)
 - Week 13-24: Advanced tasks (dashboards, automation, insights presentations)
+- Tasks must NEVER reference external tools that don't exist in the simulation, such as Slack channels, shared Google Docs, Jira tickets, or any external links. All deliverables must be submittable directly in the platform — either as pasted text/code or as an uploaded file.
 
 Respond ONLY with a valid JSON array. No explanation, no markdown, no extra text.
 Format:

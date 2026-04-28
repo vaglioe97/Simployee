@@ -9,14 +9,25 @@ import anthropic
 import openpyxl
 import pandas as pd
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile, status
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel, field_validator
 from supabase import Client, create_client
 
 load_dotenv()
+
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data")
+
+DATASETS = [
+    {
+        "filename": "novaretail_sales_q1_2024.csv",
+        "name": "novaretail_sales_q1_2024.csv",
+        "description": "NovaRetail Inc. Q1 2024 sales data — orders, products, categories, revenue, regions, and stores.",
+    },
+]
 
 # ── Config ────────────────────────────────────────────────────────────────────
 SUPABASE_URL     = os.environ["SUPABASE_URL"]
@@ -572,3 +583,30 @@ def resubmit_task(task_id: int, current_user: dict = Depends(get_current_user)):
         .execute()
     )
     return result.data[0]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Dataset routes
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@app.get("/datasets")
+def list_datasets(request: Request):
+    base = str(request.base_url).rstrip("/")
+    return [
+        {
+            "name": d["name"],
+            "description": d["description"],
+            "download_url": f"{base}/datasets/{d['filename']}/download",
+        }
+        for d in DATASETS
+    ]
+
+
+@app.get("/datasets/{filename}/download")
+def download_dataset(filename: str):
+    known = {d["filename"] for d in DATASETS}
+    if filename not in known:
+        raise HTTPException(status_code=404, detail="Dataset not found.")
+    path = os.path.join(DATA_DIR, filename)
+    if not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="File not found on server.")
+    return FileResponse(path, filename=filename, media_type="text/csv")
