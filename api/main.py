@@ -28,6 +28,11 @@ DATASETS = [
         "name": "novaretail_sales_q1_2024.csv",
         "description": "NovaRetail Inc. Q1 2024 sales data — orders, products, categories, revenue, regions, and stores.",
     },
+    {
+        "filename": "novaretail_inventory.csv",
+        "name": "novaretail_inventory.csv",
+        "description": "NovaRetail Inc. inventory snapshot — 50 SKUs with stock levels, reorder points, and last restock dates.",
+    },
 ]
 
 # ── Config ────────────────────────────────────────────────────────────────────
@@ -222,6 +227,7 @@ Rules:
 - Week 5-12: Intermediate tasks (analysis, visualization, Python scripts)
 - Week 13-24: Advanced tasks (dashboards, automation, insights presentations)
 - For SQL tasks: the user works against novaretail_sales_q1_2024.csv, available for download on the platform. Never ask for results from a live database. The deliverable is the SQL query itself, optionally with results shown from running it on the CSV using pandas or SQLite.
+- The ONLY datasets available to the user are the ones listed on the platform. Currently: sales table (novaretail_sales_q1_2024.csv) and inventory table (novaretail_inventory.csv). Never ask the user to create mock data, simulate data, or use data sources that are not explicitly available for download on the platform. If a task involves a table, that table must exist in the available datasets.
 
 Respond ONLY with a valid JSON array. No explanation, no markdown, no extra text.
 Format:
@@ -273,7 +279,8 @@ Guidelines:
 - On follow-up messages: continue naturally, answer questions, give guidance.
 - If the work is fundamentally correct, be positive and give ONE concrete improvement tip only.
 - If there's a real problem, call out ONE main issue — the most important one. Don't list every flaw.
-- For SQL tasks: the user works against novaretail_sales_q1_2024.csv. The deliverable is the SQL query itself — results shown from running it on the CSV with pandas or SQLite are a bonus.
+- For SQL tasks: the user works against novaretail_sales_q1_2024.csv and/or novaretail_inventory.csv. The deliverable is the SQL query itself — results shown from running it on the CSV with pandas or SQLite are a bonus.
+- The ONLY datasets available to the user are the ones listed on the platform. Currently: sales table (novaretail_sales_q1_2024.csv) and inventory table (novaretail_inventory.csv). Never ask the user to create mock data, simulate data, or use data sources that are not explicitly available for download on the platform. If a task references a table, that table must exist in the available datasets.
 - NEVER suggest using Notion, Jira, Confluence, Trello, Asana, GitHub Issues, Linear, monday.com, or any external tracking system. If they need to document something, tell them to include it in their message or a plain text file.
 - NEVER reference external tools that don't exist in the simulation: no Slack channels, shared Google Docs, or external links.
 - Keep it 100-200 words.
@@ -725,13 +732,16 @@ Style rules:
 
 @app.post("/sql/run")
 def run_sql(body: SqlRunRequest, current_user: dict = Depends(get_current_user)):
-    csv_path = os.path.join(DATA_DIR, "novaretail_sales_q1_2024.csv").replace("\\", "/")
-    if not os.path.isfile(csv_path):
+    sales_path = os.path.join(DATA_DIR, "novaretail_sales_q1_2024.csv").replace("\\", "/")
+    inventory_path = os.path.join(DATA_DIR, "novaretail_inventory.csv").replace("\\", "/")
+    if not os.path.isfile(sales_path):
         raise HTTPException(status_code=500, detail="Dataset file not found on server.")
 
     try:
         conn = duckdb.connect()
-        conn.execute(f"CREATE VIEW sales AS SELECT * FROM read_csv_auto('{csv_path}')")
+        conn.execute(f"CREATE VIEW sales AS SELECT * FROM read_csv_auto('{sales_path}')")
+        if os.path.isfile(inventory_path):
+            conn.execute(f"CREATE VIEW inventory AS SELECT * FROM read_csv_auto('{inventory_path}')")
         rel = conn.execute(
             f"SELECT * FROM ({body.query.rstrip(';')}) __q LIMIT 100"
         )
