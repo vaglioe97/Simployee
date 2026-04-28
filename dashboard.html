@@ -519,7 +519,7 @@
       </div>
       <div class="week-badge">
         <span class="week-badge-label">Current week</span>
-        <span class="week-badge-value">1 / 24</span>
+        <span class="week-badge-value" id="week-badge-value">— / 24</span>
       </div>
     </div>
 
@@ -559,22 +559,22 @@
     <div class="metrics-grid">
       <div class="metric-card">
         <p class="metric-label">Week</p>
-        <p class="metric-value accent">1</p>
+        <p class="metric-value accent" id="metric-week">—</p>
         <p class="metric-sub">of 24 total</p>
       </div>
       <div class="metric-card">
         <p class="metric-label">Tasks Completed</p>
-        <p class="metric-value">0</p>
-        <p class="metric-sub">this week</p>
+        <p class="metric-value" id="metric-completed">—</p>
+        <p class="metric-sub">all time</p>
       </div>
       <div class="metric-card">
         <p class="metric-label">Tasks Pending</p>
-        <p class="metric-value">3</p>
-        <p class="metric-sub">ready to start</p>
+        <p class="metric-value" id="metric-pending">—</p>
+        <p class="metric-sub">this week</p>
       </div>
       <div class="metric-card">
         <p class="metric-label">Program</p>
-        <p class="metric-value">4<span style="font-size:1rem; font-weight:600">%</span></p>
+        <p class="metric-value" id="metric-pct">—<span style="font-size:1rem; font-weight:600">%</span></p>
         <p class="metric-sub">complete</p>
       </div>
     </div>
@@ -583,10 +583,10 @@
     <div class="progress-wrap">
       <div class="progress-header">
         <span>Overall progress</span>
-        <strong>Week 1 of 24</strong>
+        <strong id="progress-label">Week — of 24</strong>
       </div>
       <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progress-fill" style="width: 4%"></div>
+        <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
       </div>
     </div>
 
@@ -660,6 +660,45 @@
     }
 
     loadUser();
+
+    // ── Load progress & task counts from API ──────────────────────────────────
+    async function loadProgress() {
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE}/users/me/progress`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const prog = await res.json();
+        const week  = prog.current_week ?? 1;
+        const total = prog.duration_weeks ?? 24;
+        const pct   = Math.round(((week - 1) / total) * 100);
+
+        document.getElementById('week-badge-value').textContent = `${week} / ${total}`;
+        document.getElementById('metric-week').textContent      = String(week);
+        document.getElementById('metric-pct').innerHTML         = `${pct}<span style="font-size:1rem;font-weight:600">%</span>`;
+        document.getElementById('progress-label').textContent   = `Week ${week} of ${total}`;
+        document.getElementById('progress-fill').style.width    = `${pct}%`;
+
+        // Fetch tasks for all weeks 1…week concurrently, count reviewed across all
+        const fetches = Array.from({ length: week }, (_, i) =>
+          fetch(`${API_BASE}/tasks?week=${i + 1}`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+          }).then(r => r.ok ? r.json() : [])
+        );
+        const allWeeks  = await Promise.all(fetches);
+        const allTasks  = allWeeks.flat();
+        const reviewed  = allTasks.filter(t => t.status === 'reviewed').length;
+        const pending   = allTasks.filter(t => t.status === 'pending').length;
+
+        document.getElementById('metric-completed').textContent = String(reviewed);
+        document.getElementById('metric-pending').textContent   = String(pending);
+      } catch {
+        // silently ignore — skeleton dashes stay visible
+      }
+    }
+
+    loadProgress();
 
     // ── Logout ────────────────────────────────────────────────────────────────
     document.getElementById('btn-logout').addEventListener('click', () => {

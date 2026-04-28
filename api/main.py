@@ -199,7 +199,7 @@ async def read_uploaded_file(file: UploadFile) -> str:
         return f"Could not read file: {e}"
 
 # ── AI: generate tasks (mirrors core/ai_engine.py) ────────────────────────────
-def _generate_weekly_tasks(job_path: dict, week_number: int) -> list[dict]:
+def _generate_weekly_tasks(job_path: dict, week_number: int, previous_titles: list[str] | None = None) -> list[dict]:
     prompt = f"""You are a simulation engine for a job training platform called Simployee.
 
 The user has been hired as a {job_path['title']} at {job_path['company']},
@@ -217,6 +217,7 @@ Company database schema (always reference exact table/column names in SQL tasks)
 
 Generate 3 realistic work tasks for Week {week_number} of their simulated job.
 Each task should feel like a real ticket a junior analyst would receive at work.
+{"IMPORTANT: The user has already completed tasks with these titles in previous weeks: " + str(previous_titles) + ". Do NOT generate tasks with the same or similar titles. Each week must introduce new skills and scenarios." if previous_titles else ""}
 
 Rules:
 - Tasks must be practical and doable (the user will actually attempt them)
@@ -585,8 +586,17 @@ def generate_tasks(current_user: dict = Depends(get_current_user)):
     if existing.data:
         raise HTTPException(status_code=409, detail="Tasks for this week already exist.")
 
+    prev_res = (
+        _supabase.table("tasks")
+        .select("title")
+        .eq("user_id", current_user["id"])
+        .lt("week", week)
+        .execute()
+    )
+    previous_titles = [row["title"] for row in prev_res.data] if prev_res.data else []
+
     try:
-        generated = _generate_weekly_tasks(job_path, week)
+        generated = _generate_weekly_tasks(job_path, week, previous_titles)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {e}")
 
