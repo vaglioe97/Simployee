@@ -1002,29 +1002,29 @@
         .replace(/\n/g, '<br>');
     }
 
-    // ── API: load datasets ────────────────────────────────────────────────────
-    async function loadDatasets() {
-      try {
-        const res = await fetch(`${API_BASE}/datasets`);
-        if (!res.ok) return;
-        const datasets = await res.json();
-        if (!datasets.length) return;
-        const list = document.getElementById('datasets-list');
-        list.innerHTML = datasets.map(d => `
-          <div class="dataset-card">
-            <div class="dataset-info">
-              <p class="dataset-name">📊 ${escHtml(d.name)}</p>
-              <p class="dataset-desc">${escHtml(d.description)}</p>
-            </div>
-            <a class="btn-download" href="${d.download_url}" download>
-              ↓ Download
-            </a>
+    // ── Datasets (served via GitHub Pages) ───────────────────────────────────
+    const DATASETS = [
+      {
+        name: 'novaretail_sales_q1_2024.csv',
+        description: 'NovaRetail Inc. Q1 2024 sales data — orders, products, categories, revenue, regions, and stores.',
+        download_url: 'https://vaglioe97.github.io/Simployee/datasets/novaretail_sales_q1_2024.csv',
+      },
+    ];
+
+    function loadDatasets() {
+      const list = document.getElementById('datasets-list');
+      list.innerHTML = DATASETS.map(d => `
+        <div class="dataset-card">
+          <div class="dataset-info">
+            <p class="dataset-name">📊 ${escHtml(d.name)}</p>
+            <p class="dataset-desc">${escHtml(d.description)}</p>
           </div>
-        `).join('');
-        document.getElementById('datasets-section').hidden = false;
-      } catch {
-        // silently skip if endpoint unavailable
-      }
+          <a class="btn-download" href="${d.download_url}" download>
+            ↓ Download
+          </a>
+        </div>
+      `).join('');
+      document.getElementById('datasets-section').hidden = false;
     }
 
     // ── API: load user progress ───────────────────────────────────────────────
