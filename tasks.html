@@ -662,6 +662,180 @@
       box-shadow: 0 0 14px var(--accent-glow);
     }
 
+    /* ── SQL Runner ────────────────────────────────────────────────────────── */
+    .sql-runner {
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-card);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .sql-runner-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.9rem 1.25rem;
+      background: var(--bg-card-2);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: background 0.2s;
+    }
+
+    .sql-runner-toggle:hover { background: var(--bg-card); }
+
+    .sql-runner-toggle-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sql-runner-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .sql-runner-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .sql-chevron {
+      color: var(--text-muted);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+
+    .sql-chevron.open { transform: rotate(180deg); }
+
+    .sql-runner-body {
+      padding: 1.25rem;
+      border-top: 1px solid var(--border-card);
+      background: var(--bg-card-2);
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    textarea.sql-editor {
+      width: 100%;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.82rem;
+      color: var(--text);
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      resize: vertical;
+      min-height: 90px;
+      outline: none;
+      line-height: 1.65;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    textarea.sql-editor::placeholder { color: #475569; }
+
+    textarea.sql-editor:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+
+    .sql-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+    .btn-run-sql {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #6366F1, #4F46E5);
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.25rem;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s, opacity 0.2s;
+    }
+
+    .btn-run-sql:hover  { box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-1px); }
+    .btn-run-sql:active { transform: translateY(0); }
+    .btn-run-sql:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    .sql-hint { font-size: 0.75rem; color: #475569; }
+
+    .sql-error-box {
+      font-size: 0.8rem;
+      color: #F87171;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .sql-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .sql-empty {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 1.25rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border-card);
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .table-wrap::-webkit-scrollbar { width: 4px; height: 4px; }
+    .table-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
+
+    .result-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+
+    .result-table th {
+      position: sticky;
+      top: 0;
+      background: #1a2540;
+      color: #818CF8;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.55rem 0.85rem;
+      text-align: left;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border-card);
+    }
+
+    .result-table td {
+      padding: 0.45rem 0.85rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-table tr:last-child td { border-bottom: none; }
+    .result-table tbody tr:hover td { background: rgba(255,255,255,0.025); color: var(--text); }
+
     /* ── Responsive ────────────────────────────────────────────────────────── */
     @media (max-width: 640px) {
       .nav-links { display: none; }
@@ -710,6 +884,35 @@
     <div class="datasets-section" id="datasets-section" hidden>
       <p class="datasets-label">Available Datasets</p>
       <div id="datasets-list"></div>
+    </div>
+
+    <!-- SQL Runner -->
+    <div class="sql-runner">
+      <button class="sql-runner-toggle" id="sql-toggle" aria-expanded="false">
+        <div class="sql-runner-toggle-left">
+          <span class="sql-runner-label">SQL</span>
+          <span class="sql-runner-title">Run a query against the dataset</span>
+        </div>
+        <svg class="sql-chevron" id="sql-chevron" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      <div id="sql-runner-body" hidden>
+        <div class="sql-runner-body">
+          <textarea class="sql-editor" id="sql-input" spellcheck="false"
+            placeholder="SELECT * FROM sales LIMIT 10">SELECT * FROM sales LIMIT 10</textarea>
+          <div class="sql-actions">
+            <button class="btn-run-sql" id="btn-run-sql">
+              <span class="spinner" id="sql-spinner" hidden></span>
+              ▶ Run Query
+            </button>
+            <span class="sql-hint">Table: <code>sales</code> · Max 100 rows</span>
+          </div>
+          <div id="sql-result"></div>
+        </div>
+      </div>
     </div>
 
     <!-- State: loading -->
@@ -1001,6 +1204,83 @@
         .replace(/"/g, '&quot;')
         .replace(/\n/g, '<br>');
     }
+
+    // ── SQL Runner ────────────────────────────────────────────────────────────
+    document.getElementById('sql-toggle').addEventListener('click', () => {
+      const body    = document.getElementById('sql-runner-body');
+      const chevron = document.getElementById('sql-chevron');
+      const toggle  = document.getElementById('sql-toggle');
+      const open    = !body.hidden;
+      body.hidden   = open;
+      chevron.classList.toggle('open', !open);
+      toggle.setAttribute('aria-expanded', String(!open));
+    });
+
+    async function runSQL() {
+      const query   = document.getElementById('sql-input').value.trim();
+      if (!query) return;
+
+      const btn     = document.getElementById('btn-run-sql');
+      const spinner = document.getElementById('sql-spinner');
+      const result  = document.getElementById('sql-result');
+
+      btn.disabled     = true;
+      spinner.hidden   = false;
+      result.innerHTML = '';
+
+      try {
+        const res  = await fetch(`${API_BASE}/sql/run`, {
+          method:  'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type':  'application/json',
+          },
+          body: JSON.stringify({ query }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          result.innerHTML = `<div class="sql-error-box">${escHtml(data.detail || 'Query failed.')}</div>`;
+          return;
+        }
+
+        if (!data.rows.length) {
+          result.innerHTML = '<p class="sql-empty">Query returned 0 rows.</p>';
+          return;
+        }
+
+        const countLabel = data.row_count >= 100
+          ? 'Showing first 100 rows'
+          : `${data.row_count} row${data.row_count !== 1 ? 's' : ''}`;
+
+        const thead = `<thead><tr>${data.columns.map(c => `<th>${escHtml(c)}</th>`).join('')}</tr></thead>`;
+        const tbody = `<tbody>${data.rows.map(r =>
+          `<tr>${r.map(v => `<td>${escHtml(v === null ? 'NULL' : String(v))}</td>`).join('')}</tr>`
+        ).join('')}</tbody>`;
+
+        result.innerHTML = `
+          <p class="sql-count">${countLabel}</p>
+          <div class="table-wrap">
+            <table class="result-table">${thead}${tbody}</table>
+          </div>
+        `;
+      } catch {
+        result.innerHTML = `<div class="sql-error-box">Could not reach the server.</div>`;
+      } finally {
+        btn.disabled   = false;
+        spinner.hidden = true;
+      }
+    }
+
+    document.getElementById('btn-run-sql').addEventListener('click', runSQL);
+
+    document.getElementById('sql-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        runSQL();
+      }
+    });
 
     // ── Datasets (served via GitHub Pages) ───────────────────────────────────
     const DATASETS = [

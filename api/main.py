@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import anthropic
+import duckdb
 import openpyxl
 import pandas as pd
 from dotenv import load_dotenv
@@ -220,6 +221,7 @@ Rules:
 - Week 1-4: Basic tasks (data cleaning, simple queries, basic reports)
 - Week 5-12: Intermediate tasks (analysis, visualization, Python scripts)
 - Week 13-24: Advanced tasks (dashboards, automation, insights presentations)
+- For SQL tasks: the user works against novaretail_sales_q1_2024.csv, available for download on the platform. Never ask for results from a live database. The deliverable is the SQL query itself, optionally with results shown from running it on the CSV using pandas or SQLite.
 
 Respond ONLY with a valid JSON array. No explanation, no markdown, no extra text.
 Format:
@@ -295,8 +297,8 @@ Instructions for your response:
 - NEVER start with "Great job!" or "Excellent work!" or any generic praise opener
 - If the deliverable was supposed to be a file (Excel, CSV, script) and they only sent text, call it out directly and ask for the actual file. Example tone: "Hey, I appreciate the explanation but I actually need the file itself here, not just a description of what you did."
 - If they submitted a file but it's missing something, point it out specifically
-- If the work is genuinely good, acknowledge it but still give one concrete improvement tip
-- If the work has real errors or problems, be honest about it — don't sugarcoat
+- If the work is fundamentally correct, the tone must be positive — acknowledge what they did well, then give exactly one concrete improvement tip. Do not pile on multiple issues.
+- If the work has a real problem, call out ONE main issue only — the most important one. Do not list every flaw you notice.
 - Keep it 150-250 words
 - Sound like a real person, not an AI. No bullet point lists in your response.
 - End with either a follow-up question or a next step, like a real manager would"""
@@ -334,6 +336,22 @@ class LoginRequest(BaseModel):
 
 class SelectJobPathRequest(BaseModel):
     job_path_id: str
+
+class SqlRunRequest(BaseModel):
+    query: str
+
+    @field_validator("query")
+    @classmethod
+    def validate_query(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped.upper().lstrip("(").startswith("SELECT"):
+            raise ValueError("Only SELECT queries are allowed.")
+        blocked = ["read_csv", "read_parquet", "read_json", "read_text", "glob(", "httpfs", "http://", "https://"]
+        lower = stripped.lower()
+        for pat in blocked:
+            if pat in lower:
+                raise ValueError(f"Not allowed in queries: '{pat}'")
+        return stripped
 
 class InterviewMessageRequest(BaseModel):
     job_path_id: str
@@ -645,6 +663,42 @@ Style rules:
 # ═══════════════════════════════════════════════════════════════════════════════
 # Dataset routes
 # ═══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/sql/run")
+def run_sql(body: SqlRunRequest, current_user: dict = Depends(get_current_user)):
+    csv_path = os.path.join(DATA_DIR, "novaretail_sales_q1_2024.csv").replace("\\", "/")
+    if not os.path.isfile(csv_path):
+        raise HTTPException(status_code=500, detail="Dataset file not found on server.")
+
+    try:
+        conn = duckdb.connect()
+        conn.execute(f"CREATE VIEW sales AS SELECT * FROM read_csv_auto('{csv_path}')")
+        rel = conn.execute(
+            f"SELECT * FROM ({body.query.rstrip(';')}) __q LIMIT 100"
+        )
+        columns = [desc[0] for desc in rel.description]
+        rows = rel.fetchall()
+    except duckdb.Error as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    finally:
+        try:
+            conn.close()
+        except Exception:
+            pass
+
+    def _safe(v):
+        if v is None:
+            return None
+        if isinstance(v, (bool, int, float, str)):
+            return v
+        return str(v)
+
+    return {
+        "columns": columns,
+        "rows":    [[_safe(v) for v in row] for row in rows],
+        "row_count": len(rows),
+    }
+
 
 @app.get("/datasets")
 def list_datasets(request: Request):
